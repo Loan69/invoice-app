@@ -1,4 +1,3 @@
-import { Invoice } from "@/types/invoice";
 import { InvoiceWithClient } from "@/types/invoiceWithClient";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 

@@ -41,7 +41,7 @@ export default function SignupPage() {
           className="bg-black text-white px-4 py-2 rounded"
           onClick={handleSignup}
         >
-          S'inscrire
+          S&apos;inscrire
         </button>
 
         {/* Redirection vers le formulaire de connexion si déjà un compte */}

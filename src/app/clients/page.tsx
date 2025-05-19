@@ -17,7 +17,7 @@ export default function ClientsList() {
     const fetchClients = async () => {
       const { data, error } = await supabase
         .from("clients")
-        .select("id, id_int, company, first_name, last_name, phone, user_id");
+        .select("id_int, company, first_name, last_name, phone, user_id");
 
       if (error) console.error("Erreur :", error.message);
       else setClients(data);
