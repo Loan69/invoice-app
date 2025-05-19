@@ -9,9 +9,10 @@ import InvoicePDF from '../components/InvoicePDF';
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from 'lucide-react';
 import Header from "../components/Header";
+import { InvoiceWithClient } from "@/types/invoiceWithClient";
 
 export default function FacturesList() {
-  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
   const router = useRouter()
 
   // Conversion du format date en version française
@@ -26,10 +27,7 @@ export default function FacturesList() {
       const { data, error } = await supabase
         .from("invoices")
         .select(`
-          id_int,
-          date,
-          amount,
-          status,
+          *,
           clients (
             company
           )
@@ -109,7 +107,7 @@ export default function FacturesList() {
                 <tr key={invoice.id_int} className="border-t">
                   <td className="px-4 py-2">{invoice.id_int.toString().padStart(4, "0")}</td>
                   <td className="px-4 py-2">{formatDateFR(invoice.date)}</td>
-                  <td>{invoice.clients.company}</td>
+                  <td>{invoice.clients?.company}</td>
                   <td className="px-4 py-2">{invoice.amount} €</td>
                   <td className="px-4 py-2">{invoice.status}</td>
                   <td className="px-4 py-2 text-center">
@@ -121,16 +119,10 @@ export default function FacturesList() {
                   <PDFDownloadLink
                     document={
                       <InvoicePDF
-                        invoice={{
-                          id_int: invoice.id_int,
-                          client: invoice.client?.company || "Client inconnu",
-                          amount: invoice.amount,
-                          date: new Date(invoice.created_at).toLocaleDateString(),
-                          status: invoice.status,
-                        }}
+                        invoice={invoice}
                       />
                     }
-                    fileName={`facture_${invoice.id}.pdf`}
+                    fileName={`facture_${invoice.id_int}.pdf`}
                   >
                     {({ loading }) =>
                       loading ? (

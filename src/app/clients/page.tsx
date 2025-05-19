@@ -7,16 +7,17 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Header from "../components/Header";
+import { Client } from "@/types/client";
 
 export default function ClientsList() {
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<Client[] | []>([]);
   const router = useRouter()
 
   useEffect(() => {
     const fetchClients = async () => {
       const { data, error } = await supabase
         .from("clients")
-        .select("id_int, company, first_name, last_name, phone");
+        .select("id, id_int, company, first_name, last_name, phone, user_id");
 
       if (error) console.error("Erreur :", error.message);
       else setClients(data);

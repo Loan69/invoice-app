@@ -1,3 +1,5 @@
+import { Invoice } from "@/types/invoice";
+import { InvoiceWithClient } from "@/types/invoiceWithClient";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
@@ -46,9 +48,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function InvoicePDF({ invoice }: { invoice: any }) {
-  const clientName = invoice.client || "Client inconnu";
-  const invoiceId = invoice.id || "0000";
+export default function InvoicePDF({ invoice }: { invoice: InvoiceWithClient }) {
+  const clientName = invoice.client_id || "Client inconnu";
+  const invoiceId = invoice.id_int || "0000";
 
   return (
     <Document>

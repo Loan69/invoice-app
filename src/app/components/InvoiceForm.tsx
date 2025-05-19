@@ -12,6 +12,8 @@ import { PlusCircle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown, X } from "lucide-react";
+import { Client } from "@/types/client";
+import { Template } from "@/types/template";
 
 type InvoiceFormProps = {
   setIsDirty?: (v: boolean) => void;
@@ -29,7 +31,7 @@ type InvoiceFormProps = {
 
 export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFormProps) {
   const router = useRouter();
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<Client[] | [] >([]);
   const [form, setForm] = useState({
     client_id: invoiceData?.client_id?.toString() || "",
     date: invoiceData?.date || new Date().toISOString().split("T")[0],
@@ -37,7 +39,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     amount: invoiceData?.amount?.toString() || "",
     status: invoiceData?.status || "À régler",
   });
-  const [templates, setTemplates] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<Template[] | []>([]);
   const [showTemplateName, setShowTemplateName] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [open, setOpen] = useState(false);              // pour contrôler l’ouverture du popover
@@ -47,7 +49,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   // Requête pour rechercher un client à qui affecter la facture
   useEffect(() => {
     const fetchClients = async () => {
-      const { data, error } = await supabase.from("clients").select("id_int, company");
+      const { data, error } = await supabase.from("clients").select("*");
       if (error) console.error("Erreur de chargement des clients :", error);
       else setClients(data);
     };

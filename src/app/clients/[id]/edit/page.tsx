@@ -5,10 +5,11 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/app/lib/supabase';
 import { ArrowLeft } from "lucide-react";
 import ClientForm from '@/app/components/ClientForm';
+import { Client } from '@/types/client';
 
 export default function EditClientPage() {
   const { id } = useParams();
-  const [clientData, setClientData] = useState<any>(null);
+  const [clientData, setClientData] = useState<Client | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const router = useRouter();
 

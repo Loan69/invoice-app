@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
+import { Client } from "@/types/client";
 
 type ClientFormProps = {
   mode: 'create' | 'edit';
-  clientData?: any;       // Données initiales pour préremplir
+  clientData?: Partial<Client>;       // Données initiales pour préremplir
   clientId?: string;      // Pour l’édition
   setIsDirty?: (v: boolean) => void;
 };

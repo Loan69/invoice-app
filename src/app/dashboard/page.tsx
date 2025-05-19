@@ -6,19 +6,21 @@ import LogoutButton from '../components/LogoutButton'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { BarChart2, Users, FileText } from "lucide-react";
+import { BarChart2, Users } from "lucide-react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from '../components/InvoicePDF';
 import { supabase } from "../lib/supabase";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { InvoiceWithClient } from '@/types/invoiceWithClient'
+import { Client } from '@/types/client'
 
 
 export default function DashboardPage() {
   const { user } = useAuth()
   const router = useRouter()
 
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceWithClient[]>([])
+  const [clients, setClients] = useState<Client[]>([]);
 
   const [totalRevenue, setTotalRevenue] = useState(0)
   const [pendinginvoices, setPendingInvoices] = useState(0)
@@ -28,7 +30,7 @@ export default function DashboardPage() {
     const fetchClients = async () => {
       const { data, error } = await supabase
         .from("clients")
-        .select("id_int, last_name, first_name, company, created_at")
+        .select("id_int, last_name, first_name, company, created_at, user_id")
         .order("created_at", { ascending: false })
         .limit(5);
       
@@ -105,7 +107,7 @@ export default function DashboardPage() {
     if (user === null) {
       router.push('/login')
     }
-  }, [user])
+  }, [user, router])
 
   if (!user) return null
 
@@ -190,7 +192,7 @@ export default function DashboardPage() {
                 className="flex justify-between items-center text-sm text-gray-700 border-b pb-1"
               >
                 <span>
-                  #{invoice.id_int.toString().padStart(4, "0")} – {invoice.amount}€ – {invoice.status} - {invoice.clients.company}
+                  #{invoice.id_int.toString().padStart(4, "0")} – {invoice.amount}€ – {invoice.status} - {invoice.clients?.company}
                 </span>
                 <Link href={`invoices/${invoice.id_int}/edit`}>
                   <Button className='cursor-pointer'>Éditer</Button>
@@ -198,16 +200,10 @@ export default function DashboardPage() {
                 <PDFDownloadLink
                   document={
                     <InvoicePDF
-                      invoice={{
-                        id: invoice.id_int,
-                        client: invoice.clients.company || "Client inconnu",
-                        amount: invoice.amount,
-                        date: new Date(invoice.created_at).toLocaleDateString(),
-                        status: invoice.status,
-                      }}
+                      invoice={invoice}
                     />
                   }
-                  fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients.company}_${new Date(invoice.created_at).toLocaleDateString()}.pdf`}
+                  fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
                 >
                   {({ loading }) =>
                     loading ? (
