@@ -1,5 +1,10 @@
 import './globals.css'
-import { AuthProvider } from './context/page'
+import { AuthProvider } from './context/AuthContext'
+
+export const metadata = {
+  title: 'Mon App',
+  description: 'Logiciel de gestion et d&apos;édition de facture pour entreprenneurs',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
