@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../context/AuthContext'
 import LogoutButton from '../components/LogoutButton'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,17 +12,41 @@ import { supabase } from "../lib/supabase";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { InvoiceWithClient } from '@/types/invoiceWithClient'
 import { Client } from '@/types/client'
+import { useUser } from '@supabase/auth-helpers-react'
+import { Profile } from '@/types/profile'
 
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+  const user = useUser()
   const router = useRouter()
 
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([])
   const [clients, setClients] = useState<Client[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const [totalRevenue, setTotalRevenue] = useState(0)
   const [pendinginvoices, setPendingInvoices] = useState(0)
+
+  // Récupération des données de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!user) return  // ne fait rien si pas de user
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, first_name")
+        .eq('id', user?.id)
+        .maybeSingle();
+      if (!error && data) {
+        setProfile(data);
+      } else {
+        console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
+      }
+    };
+
+    fetchUser();
+
+  }, [user]);
 
   // Récupération des derniers clients à afficher
   useEffect(() => {
@@ -99,24 +122,13 @@ export default function DashboardPage() {
       })
       .map(([, { label, total }]) => ({ name: label, total }));
   }, [invoices]);
-  
-  
-
-  // Redirection si l'utilisateur n'est pas connecté
-  useEffect(() => {
-    if (user === null) {
-      router.push('/login')
-    }
-  }, [user, router])
-
-  if (!user) return null
 
   return (
     <div className="min-h-screen flex flex-col justify-between p-6 bg-gray-50">
       {/* Header avec actions */}
       <header className="flex justify-between items-center mb-6">
         <div className="space-x-4 justify-between">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Bienvenue sur votre tableau de bord</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">Bienvenue {profile?.first_name}</h1>
           <Link href="/clients/new">
             <Button
               variant="default"
@@ -128,6 +140,14 @@ export default function DashboardPage() {
               variant="outline"
               className='cursor-pointer'
             >+ Créer une facture</Button>
+          </Link>
+          <Link href="/settings">
+            <Button
+              variant="default"
+              className="text-white top-4 right-4 cursor-pointer"
+            >
+             + Paramètres
+            </Button>
           </Link>
         </div>
         <LogoutButton />

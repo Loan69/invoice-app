@@ -1,18 +1,18 @@
 import './globals.css'
-import { AuthProvider } from './context/AuthContext'
+import { Providers } from './providers'
 
 export const metadata = {
   title: 'Mon App',
-  description: 'Logiciel de gestion et d&apos;édition de facture pour entreprenneurs',
+  description: 'Logiciel de gestion et d&apos;édition de facture pour entrepreneurs',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <body>
-        <AuthProvider>
+        <Providers>
           {children}
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   )

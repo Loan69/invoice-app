@@ -1,31 +1,47 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '../lib/supabase'
 import Link from 'next/link'
 import Header from '../components/Header'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+
 
 export default function LoginPage() {
+  const supabase = createClientComponentClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter()
+  
 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    else router.push('/dashboard')
-  }
+    const { data: loginData, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  useEffect(() => {
-    const check = async () => {
-      const { data } = await supabase.auth.getUser()
-      if (data.user) router.push('/dashboard')
+
+    if (error || !loginData.user) {
+      setMessage('Connexion échouée : ' + error?.message);
+      return;
     }
-    check()
-  }, [router])
-  
+
+    const userId = loginData.user.id;
+
+    // Vérifier si un profil existe dans la table profiles
+    const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', userId)
+    .single();
+
+    if (profileError || !profile) {
+      // Si ce n'est pas le cas, on dirige vers la page de complétion du profil
+      router.push('/completeprofile');
+    } else {
+      // Sinon, on dirige vers le dashboard de l'utilisateur
+      router.push('/dashboard');
+    }
+
+  };
 
   return (
     <div>
@@ -36,7 +52,6 @@ export default function LoginPage() {
 
         {/* Formulaire de connexion */}
         <h1 className="text-2xl font-bold">Connexion</h1>
-        {error && <p className="text-red-500">{error}</p>}
         <input
           className="w-full p-2 border rounded"
           placeholder="Email"
@@ -54,6 +69,9 @@ export default function LoginPage() {
         >
           Se connecter
         </button>
+
+        {/* Message d'erreur s'il y en a un */}
+        {message && <p className="mt-1 text-center text-red-600">{message}</p>}
 
         <p className="text-sm text-center mt-6">
           Vous n’avez pas de compte ?{" "}
