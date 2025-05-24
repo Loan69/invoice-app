@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase";
 import { Profile } from "@/types/profile";
 import { useUser } from "@supabase/auth-helpers-react";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 type ProfileFormProps = {
     profileData: Partial<Profile>;
@@ -13,8 +12,8 @@ type ProfileFormProps = {
 
 
 export default function EditProfileForm({ setIsDirty, profileData }: ProfileFormProps) {
+    const supabase = createClientComponentClient()
     const user = useUser();
-    const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [profileForm, setProfileForm] = useState({
         first_name: '',
@@ -22,6 +21,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
         address: '',
         email: '',
         phone: '',
+        vat_applicable: false,
         company: '',
       });
     const [successMessage, setSuccessMessage] = useState('');
@@ -35,6 +35,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             address: profileData.address || '',
             email: profileData.email || '',
             phone: profileData.phone || '',
+            vat_applicable: profileData.vat_applicable ?? false,
             company: profileData.company || '',
           });
         }
@@ -42,10 +43,14 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
 
     // Modification d'un champ
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setProfileForm(prev => ({ ...prev, [name]: value }));
-        if (setIsDirty) setIsDirty(true);
-    };
+        const { name, type, value, checked } = e.target;
+      
+        setProfileForm((prev) => ({
+          ...prev,
+          [name]: type === "checkbox" ? checked : value,
+        }));
+      };
+      
 
     // Enregistrement des informations de l'utilisateur
     const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +60,8 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
         const { error } = await supabase
         .from('profiles')
         .update(profileForm)
-        .eq('id', user?.id);
+        .eq('id', user?.id)
+        .select();
 
         if (error) {
         console.error("Erreur modification du profil de l'utilisateur :", error.message);
@@ -130,6 +136,16 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+
+            <label className="flex items-center gap-2 mb-4">
+                <input
+                type="checkbox"
+                name="vat_applicable"
+                checked={profileForm.vat_applicable}
+                onChange={handleChange}
+                />
+                Appliquer la TVA sur mes factures
+            </label>
 
             {/* Message de succès d'enregistrement */}
             {successMessage && (

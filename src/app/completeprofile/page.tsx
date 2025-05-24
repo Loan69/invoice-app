@@ -13,7 +13,6 @@ export default function CompleteProfilePage() {
   const [lastName, setLastName] = useState('');
   const [company, setCompany] = useState('');
   const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
   const user = useUser();

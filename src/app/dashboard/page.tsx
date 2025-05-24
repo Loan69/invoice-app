@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import LogoutButton from '../components/LogoutButton'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,17 +7,16 @@ import Link from "next/link";
 import { BarChart2, Users } from "lucide-react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from '../components/InvoicePDF';
-import { supabase } from "../lib/supabase";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { InvoiceWithClient } from '@/types/invoiceWithClient'
 import { Client } from '@/types/client'
 import { useUser } from '@supabase/auth-helpers-react'
 import { Profile } from '@/types/profile'
-
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function DashboardPage() {
+  const supabase = createClientComponentClient()
   const user = useUser()
-  const router = useRouter()
 
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([])
   const [clients, setClients] = useState<Client[]>([]);
@@ -43,7 +41,7 @@ export default function DashboardPage() {
         console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
       }
     };
-
+    
     fetchUser();
 
   }, [user]);

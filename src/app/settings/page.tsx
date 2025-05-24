@@ -1,14 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
 import { useUser } from '@supabase/auth-helpers-react'
 import { useRouter } from 'next/navigation'
 import SettingsForm from "@/app/components/SettingsForm"
 import { ArrowLeft } from 'lucide-react'
 import { Profile } from '@/types/profile'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function SettingsPage() {
+  const supabase = createClientComponentClient()
   const user = useUser()
   const router = useRouter()
   const [profileData, setProfileData] = useState<Partial<Profile>>({})
