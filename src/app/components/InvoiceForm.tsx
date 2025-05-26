@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +13,8 @@ import { Command, CommandInput, CommandItem, CommandList } from "@/components/ui
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { Client } from "@/types/client";
 import { Template } from "@/types/template";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useUser } from "@supabase/auth-helpers-react";
 
 type InvoiceFormProps = {
   setIsDirty?: (v: boolean) => void;
@@ -21,7 +22,7 @@ type InvoiceFormProps = {
   invoiceData?: {
     id_int: number;
     client_id: number;
-    date: string;
+    datefac: string;
     description: string;
     amount: number;
     status: string;
@@ -30,11 +31,13 @@ type InvoiceFormProps = {
 };
 
 export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFormProps) {
+  const user = useUser();
+  const supabase = createClientComponentClient();
   const router = useRouter();
   const [clients, setClients] = useState<Client[] | [] >([]);
   const [form, setForm] = useState({
     client_id: invoiceData?.client_id?.toString() || "",
-    date: invoiceData?.date || new Date().toISOString().split("T")[0],
+    datefac: invoiceData?.datefac || new Date().toISOString().split("T")[0],
     description: invoiceData?.description || "",
     amount: invoiceData?.amount?.toString() || "",
     status: invoiceData?.status || "À régler",
@@ -70,14 +73,22 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     fetchTemplates();
   }, []);
 
+
   // Insertion des valeurs du formulaire dans la table invoices ou modification des données existantes
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Vérifie si un client est sélectionné
+  if (!form.client_id || form.client_id === "") {
+    alert("Vous devez choisir un client.");
+    return;
+  }
   
     const payload = {
       ...form,
       client_id: parseInt(form.client_id),
       amount: parseFloat(form.amount),
+      user_id: user?.id,
     };
   
     let error;
@@ -98,7 +109,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       console.error("Erreur lors de la sauvegarde :", error.message);
       return;
     }
-  
+
     router.push("/dashboard");
   };
   
@@ -218,11 +229,11 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
         </div>
 
         <div>
-          <Label>Date</Label>
+          <Label>Date de facturation</Label>
           <Input
             type="date"
-            name="date"
-            value={form.date}
+            name="datefac"
+            value={form.datefac}
             onChange={handleChange}
             required
           />
@@ -239,7 +250,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       </div>
 
         <div>
-          <Label>Montant (€)</Label>
+          <Label>Montant Hors Taxe (€)</Label>
           <Input
             type="number"
             name="amount"
@@ -281,7 +292,8 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
           type="button"
           variant="outline"
           className="w-full flex items-center gap-2 cursor-pointer"
-          onClick={() => setShowTemplateName(prev => !prev)}
+          onClick={ () => setShowTemplateName(prev => !prev)
+            }
         >
         <PlusCircle size={18} />
           Enregistrer comme modèle
@@ -307,6 +319,8 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
                   name: templateName,
                   description: form.description,
                   amount: parseFloat(form.amount),
+                  status: form.status,
+                  user_id: user?.id
                 }]);
                 if (error) {
                   console.log("Supabase insert error:", error);
@@ -316,7 +330,6 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
                   setTemplateName("");
                   setShowTemplateName(false);
                 }
-                router.push("/dashboard");
               }}
             >
               Sauvegarder

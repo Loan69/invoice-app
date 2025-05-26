@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name")
+        .select("id, first_name, company, address, email, phone")
         .eq('id', user?.id)
         .maybeSingle();
       if (!error && data) {
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from("invoices")
         .select(`*,
-                clients (company)`)
+                clients (company, last_name, first_name, address, email)`)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -98,7 +98,7 @@ export default function DashboardPage() {
     invoices.forEach((inv) => {
       if (inv.status?.toLowerCase() !== "payée") return;
   
-      const date = new Date(inv.date);
+      const date = new Date(inv.datefac);
       const month = date.getMonth(); // 0 = janvier
       const year = date.getFullYear();
       const key = `${year}-${month}`; // clé stable pour le tri
@@ -215,24 +215,27 @@ export default function DashboardPage() {
                 <Link href={`invoices/${invoice.id_int}/edit`}>
                   <Button className='cursor-pointer'>Éditer</Button>
                 </Link>
-                <PDFDownloadLink
-                  document={
-                    <InvoicePDF
-                      invoice={invoice}
-                    />
-                  }
-                  fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
-                >
-                  {({ loading }) =>
-                    loading ? (
-                      <span className="text-xs text-gray-400">Chargement…</span>
-                    ) : (
-                      <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
-                        Télécharger
-                      </Button>
-                    )
-                  }
-                </PDFDownloadLink>
+                {profile && (
+                  <PDFDownloadLink
+                    document={
+                      <InvoicePDF
+                        invoice={invoice}
+                        profile={profile}
+                      />
+                    }
+                    fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
+                  >
+                    {({ loading }) =>
+                      loading ? (
+                        <span className="text-xs text-gray-400">Chargement…</span>
+                      ) : (
+                        <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
+                          Télécharger
+                        </Button>
+                      )
+                    }
+                  </PDFDownloadLink>
+                )}
               </div>
             ))}
           </div>

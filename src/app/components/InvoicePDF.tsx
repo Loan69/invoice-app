@@ -1,90 +1,154 @@
-import { InvoiceWithClient } from "@/types/invoiceWithClient";
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet
+} from '@react-pdf/renderer';
+import { Profile } from '@/types/profile';
+import { InvoiceWithClient } from '@/types/invoiceWithClient'
+import { useEffect, useState } from 'react';
+import { useUser } from "@supabase/auth-helpers-react";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Client } from '@/types/client';
+
+type Props = {
+  invoice: InvoiceWithClient;
+  profile: Profile;
+};
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 12 },
-  header: {
-    fontSize: 20,
-    textAlign: "center",
-    marginBottom: 30,
-    fontWeight: "bold",
-  },
-  companyInfo: {
-    marginBottom: 20,
+  page: {
+    padding: 40,
+    fontSize: 11,
+    fontFamily: 'Helvetica',
   },
   section: {
+    marginBottom: 20,
+  },
+  titleContainer: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 18,
     marginBottom: 10,
+    fontWeight: 'bold',
   },
-  label: {
-    fontWeight: "bold",
-  },
-  invoiceDetails: {
-    border: "1px solid #000",
+  invoiceInfoBox: {
+    border: '1 solid #000',
     padding: 10,
+    width: '100%',
     marginBottom: 20,
   },
-  table: {
-    width: "auto",
-    marginBottom: 20,
+  invoiceInfoText: {
+    fontSize: 12,
+    marginBottom: 4,
+    textAlign: 'left',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  tableHeader: {
+    fontWeight: 'bold',
+    marginTop: 10,
+    borderBottom: '1px solid #000',
+    paddingBottom: 5,
   },
   tableRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+    borderBottom: '0.5px solid #ccc',
   },
-  tableColHeader: {
-    width: "50%",
-    fontWeight: "bold",
-    paddingBottom: 5,
-  },
-  tableCol: {
-    width: "50%",
-    paddingBottom: 5,
-  },
-  footer: {
-    textAlign: "center",
-    marginTop: 40,
-    fontSize: 10,
-    color: "gray",
+  bold: {
+    fontWeight: 'bold',
   },
 });
 
-export default function InvoicePDF({ invoice }: { invoice: InvoiceWithClient }) {
-  const clientName = invoice.client_id || "Client inconnu";
-  const invoiceId = invoice.id_int || "0000";
+export default function InvoicePDF({ invoice, profile }: Props) {
+  const supabase = createClientComponentClient()
+  const user = useUser();
+  const datefac = new Date(invoice.datefac).toLocaleDateString();
+  const totalHT = invoice.amount ?? 0;
+  const tvaRate = profile.vat_applicable ? 0.2 : 0;
+  const montantTVA = totalHT * tvaRate;
+  const totalTTC = totalHT + montantTVA;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.header}>FACTURE</Text>
-
-        <View style={styles.companyInfo}>
-          <Text>Votre Société</Text>
-          <Text>Adresse</Text>
-          <Text>Email</Text>
-          <Text>Téléphone</Text>
+        {/* En-tête */}
+         {/* Titre centré */}
+         <View style={styles.titleContainer}>
+          <Text style={styles.title}>Facture</Text>
         </View>
 
-        <View style={styles.invoiceDetails}>
-          <Text><Text style={styles.label}>Facture n° :</Text> {invoiceId}</Text>
-          <Text><Text style={styles.label}>Date :</Text> {invoice.date}</Text>
-          <Text><Text style={styles.label}>Client :</Text> {clientName}</Text>
+        {/* Bloc d'informations à droite */}
+        <View style={styles.invoiceInfoBox}>
+          <Text style={styles.invoiceInfoText}>
+            <Text style={styles.bold}>Facture n° {invoice.id_int.toString().padStart(4, '0')}</Text>
+          </Text>
+          <Text style={styles.invoiceInfoText}>
+            <Text style={styles.bold}>Date : {datefac}</Text>
+          </Text>
         </View>
 
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableColHeader}>Description</Text>
-            <Text style={styles.tableColHeader}>Montant</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCol}>Prestation ou produit</Text>
-            <Text style={styles.tableCol}>{invoice.amount} €</Text>
-          </View>
-        </View>
-
+        {/* Émetteur */}
         <View style={styles.section}>
-          <Text><Text style={styles.label}>Statut :</Text> {invoice.status}</Text>
+          <Text style={styles.bold}>Société : {profile.company}</Text>
+          <Text>{profile.address}</Text>
+          <Text>SIRET : {profile.siret}</Text>
+          <Text>Email : {profile.email}</Text>
         </View>
 
-        <Text style={styles.footer}>Merci pour votre confiance</Text>
+        {/* Destinataire */}
+        <View style={styles.section}>
+          <Text style={styles.bold}>Client :</Text>
+          <Text>{invoice.clients?.first_name} {invoice.clients?.last_name}</Text>
+          <Text>{invoice.clients?.company}</Text>
+          <Text>{invoice.clients?.address}</Text>
+          <Text>Email : {invoice.clients?.email}</Text>
+        </View>
+
+        {/* Détail des prestations */}
+        <View style={styles.section}>
+          <Text style={styles.bold}>Détails :</Text>
+          <View style={styles.tableHeader}>
+            <Text style={{ width: '70%' }}>Description</Text>
+            <Text style={{ width: '30%', textAlign: 'right' }}>Montant HT</Text>
+          </View>
+
+          <View style={styles.tableRow}>
+            <Text style={{ width: '70%' }}>{invoice.description}</Text>
+            <Text style={{ width: '30%', textAlign: 'right' }}>{totalHT.toFixed(2)} €</Text>
+          </View>
+        </View>
+
+        {/* Totaux */}
+        <View style={styles.section}>
+          <Text style={styles.bold}>Récapitulatif :</Text>
+          <View style={styles.row}>
+            <Text>Total HT :</Text>
+            <Text>{totalHT.toFixed(2)} €</Text>
+          </View>
+          <View style={styles.row}>
+            <Text>TVA ({(tvaRate * 100).toFixed(0)}%) :</Text>
+            <Text>{montantTVA.toFixed(2)} €</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.bold}>Total TTC :</Text>
+            <Text style={styles.bold}>{totalTTC.toFixed(2)} €</Text>
+          </View>
+        </View>
+
+        {/* Mentions légales */}
+        <View style={styles.section}>
+          <Text>Conditions de paiement : à réception</Text>
+          <Text>Pénalités de retard : 10% du montant TTC</Text>
+          <Text>{profile.vat_applicable ? `TVA : 20 %` : "TVA non applicable, art. 293 B du CGI"}</Text>
+        </View>
       </Page>
     </Document>
   );

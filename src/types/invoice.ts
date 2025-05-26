@@ -1,6 +1,6 @@
 export interface Invoice {
     id_int: number;
-    date: string;
+    datefac: string;
     description: string;
     amount: number;
     status: string;

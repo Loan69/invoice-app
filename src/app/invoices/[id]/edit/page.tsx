@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import { supabase } from "@/app/lib/supabase";
 import { ArrowLeft } from "lucide-react";
 import InvoiceForm from "@/app/components/InvoiceForm";
 import { InvoiceWithClient } from "@/types/invoiceWithClient";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function EditInvoicePage() {
+  const supabase = createClientComponentClient();
   const router = useRouter();
   const params = useParams();
   const invoiceId = params?.id as string;

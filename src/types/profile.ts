@@ -7,6 +7,7 @@ export interface Profile {
     email?: string;
     company?: string;
     phone?: string;
+    siret?: string;
     vat_applicable?: boolean;
     created_at?: string;
     updated_at?: string;

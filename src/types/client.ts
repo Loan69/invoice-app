@@ -10,5 +10,6 @@ export interface Client {
     created_at?: string;
     updated_at?: string;
     user_id: string;
+    is_professional?: boolean;
   }
   

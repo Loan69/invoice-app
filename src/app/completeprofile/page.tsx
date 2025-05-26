@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../lib/supabase'; // ou le bon chemin vers ton client supabase
+import { supabase } from '../lib/supabase';
 import { useUser } from '@supabase/auth-helpers-react';
+import Header from '../components/Header';
 
 export default function CompleteProfilePage() {
   const supabaseClient = supabase;
@@ -13,6 +14,8 @@ export default function CompleteProfilePage() {
   const [lastName, setLastName] = useState('');
   const [company, setCompany] = useState('');
   const [address, setAddress] = useState('');
+  const [siret, setSiret] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState<string | null>(null);
 
   const user = useUser();
@@ -33,6 +36,8 @@ export default function CompleteProfilePage() {
       last_name: lastName,
       company: company,
       address: address,
+      siret: siret,
+      phone: phone,
     });
 
     if (error) {
@@ -44,51 +49,68 @@ export default function CompleteProfilePage() {
   };
 
   return (
-    <main className="max-w-md mx-auto mt-10 p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center">Complétez votre profil</h1>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-        className="space-y-4"
-      >
-        <input
-          type="text"
-          placeholder="Prénom"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Nom"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Société (optionnel)"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Adresse (optionnel)"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+    <div>
+      <Header />
+      <main className="max-w-md mx-auto mt-10 p-4">
+        <h1 className="text-2xl font-bold mb-6 text-center">Complétez votre profil</h1>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full"
         >
-          Enregistrer
-        </button>
-      </form>
-      {message && <p className="mt-4 text-center text-red-600">{message}</p>}
-    </main>
+          <input
+            type="text"
+            placeholder="Prénom"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <input
+            type="text"
+            placeholder="Nom"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <input
+            type="text"
+            placeholder="Société (optionnel)"
+            value={company}
+            onChange={(e) => setCompany(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <input
+            type="text"
+            placeholder="Siret (optionnel)"
+            value={siret}
+            onChange={(e) => setSiret(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <input
+            type="text"
+            placeholder="Adresse (optionnel)"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <input
+            type="text"
+            placeholder="Téléphone (optionnel)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="w-full border rounded p-2"
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 cursor-pointer"
+          >
+            Enregistrer
+          </button>
+        </form>
+        {message && <p className="mt-4 text-center text-red-600">{message}</p>}
+      </main>
+    </div>
   );
 }

@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Header from "../components/Header";
 import { Client } from "@/types/client";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function ClientsList() {
+  const supabase = createClientComponentClient()
   const [clients, setClients] = useState<Client[] | []>([]);
   const router = useRouter()
 

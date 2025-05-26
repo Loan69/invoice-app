@@ -2,30 +2,36 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/app/lib/supabase';
 import { ArrowLeft } from "lucide-react";
 import ClientForm from '@/app/components/ClientForm';
 import { Client } from '@/types/client';
+import { useUser } from '@supabase/auth-helpers-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function EditClientPage() {
+  const supabase = createClientComponentClient();
+  const user = useUser();
   const { id } = useParams();
   const [clientData, setClientData] = useState<Client | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    if (!user || !id) return;
     const fetchClient = async () => {
       const { data, error } = await supabase
         .from('clients')
         .select('*')
         .eq('id_int', id)
+        .eq('user_id', user?.id)
         .single();
+
       if (error) console.error(error.message);
       else setClientData(data);
     };
 
     if (id) fetchClient();
-  }, [id]);
+  }, [id, user?.id]);
 
   const handleBack = () => {
     if (isDirty) {

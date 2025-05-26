@@ -13,7 +13,7 @@ export default function Header() {
           height={64}
         />
         <h1 className="text-white text-3xl font-semibold tracking-tight">
-          invoice-app
+          Alfred-Facture
         </h1>
       </div>
     </header>

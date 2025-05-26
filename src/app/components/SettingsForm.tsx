@@ -12,7 +12,7 @@ type ProfileFormProps = {
 
 
 export default function EditProfileForm({ setIsDirty, profileData }: ProfileFormProps) {
-    const supabase = createClientComponentClient()
+    const supabase = createClientComponentClient();
     const user = useUser();
     const [loading, setLoading] = useState(false);
     const [profileForm, setProfileForm] = useState({
@@ -49,6 +49,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
           ...prev,
           [name]: type === "checkbox" ? checked : value,
         }));
+        if (setIsDirty) setIsDirty(true);
       };
       
 

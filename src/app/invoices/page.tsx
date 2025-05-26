@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -10,8 +9,10 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from 'lucide-react';
 import Header from "../components/Header";
 import { InvoiceWithClient } from "@/types/invoiceWithClient";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function FacturesList() {
+  const supabase = createClientComponentClient();
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
   const router = useRouter()
 
@@ -106,7 +107,7 @@ export default function FacturesList() {
               {invoices.map((invoice) => (
                 <tr key={invoice.id_int} className="border-t">
                   <td className="px-4 py-2">{invoice.id_int.toString().padStart(4, "0")}</td>
-                  <td className="px-4 py-2">{formatDateFR(invoice.date)}</td>
+                  <td className="px-4 py-2">{formatDateFR(invoice.datefac)}</td>
                   <td>{invoice.clients?.company}</td>
                   <td className="px-4 py-2">{invoice.amount} €</td>
                   <td className="px-4 py-2">{invoice.status}</td>

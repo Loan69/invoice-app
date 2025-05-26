@@ -2,33 +2,42 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase";
 import { Client } from "@/types/client";
+import { useUser } from "@supabase/auth-helpers-react";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 type ClientFormProps = {
   mode: 'create' | 'edit';
-  clientData?: Partial<Client>;       // Données initiales pour préremplir
+  clientData?: Partial<Client>;  // Données initiales pour préremplir
   clientId?: string;      // Pour l’édition
   setIsDirty?: (v: boolean) => void;
 };
 
 
 export default function AddClientForm({ setIsDirty, clientData, mode, clientId }: ClientFormProps) {
+  const supabase = createClientComponentClient()
+  const user = useUser();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [clientform, setClientForm] = useState({
+  const [clientform, setClientForm] = useState<Partial<Client>>({
     first_name: clientData?.first_name || '',
-    last_name: clientData?.last_name || '',
-    siret: clientData?.siret || '',
-    address: clientData?.address || '',
-    email: clientData?.email || '',
-    phone: clientData?.phone || '',
-    company: clientData?.company || '',
+  last_name: clientData?.last_name || '',
+  siret: clientData?.siret || '',
+  address: clientData?.address || '',
+  email: clientData?.email || '',
+  phone: clientData?.phone || '',
+  company: clientData?.company || '',
+  is_professional: clientData?.is_professional || false,
   });
 
+  // Modification d'un champ
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setClientForm(prev => ({ ...prev, [name]: value }));
+    const { name, type, value, checked } = e.target;
+  
+    setClientForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
     if (setIsDirty) setIsDirty(true);
   };
 
@@ -36,8 +45,22 @@ export default function AddClientForm({ setIsDirty, clientData, mode, clientId }
     e.preventDefault();
     setLoading(true);
   
+    if (!user) {
+      console.error("Utilisateur non authentifié");
+      return;
+    }
+    
+    // Fusion du form avec l'id utilisateur
+    const clientDataToInsert = {
+      ...clientform,
+      user_id: user.id,
+    };
+    
     if (mode === 'create') {
-      const { error } = await supabase.from('clients').insert([clientform]);
+      const { error } = await supabase
+        .from('clients')
+        .insert([clientDataToInsert]);
+    
       if (error) {
         console.error("Erreur création client :", error.message);
         return;
@@ -45,14 +68,15 @@ export default function AddClientForm({ setIsDirty, clientData, mode, clientId }
     } else if (mode === 'edit' && clientId) {
       const { error } = await supabase
         .from('clients')
-        .update(clientform)
+        .update(clientDataToInsert)
         .eq('id_int', clientId);
+    
       if (error) {
         console.error("Erreur modification client :", error.message);
         return;
       }
     }
-
+    
     setLoading(false);
   
     router.push('/dashboard');
@@ -66,7 +90,16 @@ export default function AddClientForm({ setIsDirty, clientData, mode, clientId }
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full"
       >
-  
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            name="is_professional"
+            checked={clientform.is_professional}
+            onChange={handleChange}
+          />
+          <span>Client professionnel</span>
+        </label>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
             type="text"
@@ -87,24 +120,27 @@ export default function AddClientForm({ setIsDirty, clientData, mode, clientId }
             required
           />
         </div>
+        {clientform.is_professional && (
+          <>
+            <input
+              type="text"
+              name="company"
+              placeholder="Société"
+              value={clientform.company}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-        <input
-          type="text"
-          name="company"
-          placeholder="Société"
-          value={clientform.company}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <input
-          type="text"
-          name="siret"
-          placeholder="SIRET"
-          value={clientform.siret}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+            <input
+              type="text"
+              name="siret"
+              placeholder="SIRET"
+              value={clientform.siret}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </>
+        )}
 
         <input
           type="text"
