@@ -7,8 +7,6 @@ import {
 } from '@react-pdf/renderer';
 import { Profile } from '@/types/profile';
 import { InvoiceWithClient } from '@/types/invoiceWithClient'
-import { useUser } from "@supabase/auth-helpers-react";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 type Props = {
   invoice: InvoiceWithClient;

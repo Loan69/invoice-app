@@ -4,10 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ClientForm from "@/app/components/ClientForm";
-import { useUser } from '@supabase/auth-helpers-react';
 
 export default function NewClientPage() {
-  const user = useUser();
   const router = useRouter();
   const [isDirty, setIsDirty] = useState(false);
 
