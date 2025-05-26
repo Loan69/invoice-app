@@ -10,11 +10,36 @@ import { ArrowLeft } from 'lucide-react';
 import Header from "../components/Header";
 import { InvoiceWithClient } from "@/types/invoiceWithClient";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useUser } from "@supabase/auth-helpers-react";
+import { Profile } from "@/types/profile";
 
 export default function FacturesList() {
+  const user = useUser();
+  const [profile, setProfile] = useState<Profile>();
   const supabase = createClientComponentClient();
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
   const router = useRouter()
+
+  // Récupération des données de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!user) return  // ne fait rien si pas de user
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, first_name, company, address, email, phone")
+        .eq('id', user?.id)
+        .maybeSingle();
+      if (!error && data) {
+        setProfile(data);
+      } else {
+        console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
+      }
+    };
+    
+    fetchUser();
+
+  }, [user]);
 
   // Conversion du format date en version française
   const formatDateFR = (dateStr: string) => {
@@ -117,13 +142,15 @@ export default function FacturesList() {
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-center">
+                  {profile && (
                   <PDFDownloadLink
                     document={
                       <InvoicePDF
                         invoice={invoice}
+                        profile={profile}
                       />
                     }
-                    fileName={`facture_${invoice.id_int}.pdf`}
+                    fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
                   >
                     {({ loading }) =>
                       loading ? (
@@ -135,6 +162,7 @@ export default function FacturesList() {
                       )
                     }
                   </PDFDownloadLink>
+                )}
                   </td>
                   <td className="text-center">
                     <button
