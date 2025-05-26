@@ -7,10 +7,8 @@ import {
 } from '@react-pdf/renderer';
 import { Profile } from '@/types/profile';
 import { InvoiceWithClient } from '@/types/invoiceWithClient'
-import { useEffect, useState } from 'react';
 import { useUser } from "@supabase/auth-helpers-react";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Client } from '@/types/client';
 
 type Props = {
   invoice: InvoiceWithClient;
@@ -68,8 +66,6 @@ const styles = StyleSheet.create({
 });
 
 export default function InvoicePDF({ invoice, profile }: Props) {
-  const supabase = createClientComponentClient()
-  const user = useUser();
   const datefac = new Date(invoice.datefac).toLocaleDateString();
   const totalHT = invoice.amount ?? 0;
   const tvaRate = profile.vat_applicable ? 0.2 : 0;
