@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Header from '../components/Header';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function SignupPage() {
   const supabase = createClientComponentClient();
@@ -43,6 +44,11 @@ export default function SignupPage() {
     e.preventDefault();
     await handleSignup();
   };
+
+  useEffect(() => {
+    console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('SUPABASE_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  }, []);
 
   return (
     <div>
