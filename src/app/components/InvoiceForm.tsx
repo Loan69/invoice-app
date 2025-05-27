@@ -52,12 +52,19 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   // Requête pour rechercher un client à qui affecter la facture
   useEffect(() => {
     const fetchClients = async () => {
-      const { data, error } = await supabase.from("clients").select("*");
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("user_id", user?.id);
+
       if (error) console.error("Erreur de chargement des clients :", error);
       else setClients(data);
+      console.log(clients);
     };
     fetchClients();
-  }, []);
+  }, [user]);
 
   // Requête pour aller chercher les templates
   useEffect(() => {
