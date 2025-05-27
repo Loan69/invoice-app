@@ -91,9 +91,9 @@ export default function InvoicePDF({ invoice, profile }: Props) {
 
         {/* Émetteur */}
         <View style={styles.section}>
-          <Text style={styles.bold}>Société : {profile.company}</Text>
-          <Text>{profile.address}</Text>
-          <Text>SIRET : {profile.siret}</Text>
+          <Text style={styles.bold}>Société émettrice : {profile.company}</Text>
+          <Text>Adresse : {profile.address}</Text>
+          <Text>Siret : {profile.siret}</Text>
           <Text>Email : {profile.email}</Text>
         </View>
 
@@ -101,8 +101,8 @@ export default function InvoicePDF({ invoice, profile }: Props) {
         <View style={styles.section}>
           <Text style={styles.bold}>Client :</Text>
           <Text>{invoice.clients?.first_name} {invoice.clients?.last_name}</Text>
-          <Text>{invoice.clients?.company}</Text>
-          <Text>{invoice.clients?.address}</Text>
+          <Text>Société : {invoice.clients?.company}</Text>
+          <Text>Adresse : {invoice.clients?.address}</Text>
           <Text>Email : {invoice.clients?.email}</Text>
         </View>
 
