@@ -23,7 +23,7 @@ export default function SignupPage() {
         email,
         password,
         options: {
-          emailRedirectTo: 'https://invoice-app-muwr.vercel.app/completeprofile',
+          emailRedirectTo: 'https://invoice-app-muwr.vercel.app/login',
         },
       });
 
