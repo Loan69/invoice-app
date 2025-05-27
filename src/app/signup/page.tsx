@@ -22,6 +22,9 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: 'https://invoice-app-muwr.vercel.app/completeprofile',
+        },
       });
 
       if (error) {
