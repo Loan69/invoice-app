@@ -1,4 +1,4 @@
-import ResetPasswordClient from './ResetPasswordClient'
+import ResetPasswordClient from './resetPasswordClient'
 import { Suspense } from 'react'
 
 export default function Page() {
