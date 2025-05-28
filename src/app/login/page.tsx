@@ -36,7 +36,7 @@ export default function LoginPage() {
 
     if (profileError || !profile) {
       // Si ce n'est pas le cas, on dirige vers la page de complétion du profil
-      router.push('/completeprofile');
+      router.push('/completeProfile');
     } else {
       // Sinon, on dirige vers le dashboard de l'utilisateur
       router.push('/dashboard');
@@ -64,12 +64,24 @@ export default function LoginPage() {
           placeholder="Mot de passe"
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button
-          className="bg-black text-white px-4 py-2 rounded cursor-pointer"
-          onClick={handleLogin}
-        >
-          Se connecter
-        </button>
+        <div className='flex justify-between'>
+          {/*Bouton de connexion */}
+          <button
+            onClick={handleLogin}
+            className="bg-black text-white px-4 py-2 rounded cursor-pointer"
+          >
+            Se connecter
+          </button>
+
+          {/* Réinitialisation du mot de passe */}
+          <Link
+            href='/forgotPassword'
+          >
+            <p className="text-sm text-blue-600 hover:underline">
+              Mot de passe oublié ?
+            </p>
+          </Link>
+        </div>
 
         {/* Message d'erreur s'il y en a un */}
         {message && <p className="mt-1 text-center text-red-600">{message}</p>}
