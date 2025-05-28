@@ -38,7 +38,7 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-white text-gray-900">
-      <h1 className="text-4xl font-bold mb-4">Facturation simplifiée pour micro-entrepreneurs</h1>
+      <h1 className="text-4xl font-bold mb-4">Alfred Facture - Facturation simplifiée pour entrepreneurs</h1>
       <p className="text-lg mb-8 text-center max-w-xl">
         Générez vos factures automatiquement, suivez vos paiements, et restez conforme. 3 jours d’essai gratuit, puis 9,99€/mois.
       </p>
@@ -62,15 +62,15 @@ export default function LandingPage() {
         <h2 className="text-2xl font-semibold text-center mb-10">Ils en parlent mieux que nous</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"Enfin un outil simple et efficace pour gérer mes factures. Je recommande vivement !"</p>
+            <p className="italic">&quot;Enfin un outil simple et efficace pour gérer mes factures. Je recommande vivement !&quot;</p>
             <p className="mt-4 font-semibold">— Julien, graphiste freelance</p>
           </div>
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"J’ai pu envoyer ma première facture en 5 minutes. Interface claire, prise en main rapide."</p>
+            <p className="italic">&quot;J&apos;ai pu envoyer ma première facture en 5 minutes. Interface claire, prise en main rapide.&quot;</p>
             <p className="mt-4 font-semibold">— Marie, consultante</p>
           </div>
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"Service client ultra réactif, et la génération PDF est nickel. Top !"</p>
+            <p className="italic">&quot;Service client ultra réactif, et la génération PDF est nickel. Top !&quot;</p>
             <p className="mt-4 font-semibold">— Samuel, développeur indépendant</p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function LandingPage() {
 
       <section className="py-20 px-6 bg-gray-100 text-center">
         <h2 className="text-2xl font-semibold mb-6">Offre</h2>
-        <p className="text-lg mb-4">Profitez de 3 jours d’essai gratuit, puis passez à l’abonnement mensuel pour 9,90€/mois.</p>
+        <p className="text-lg mb-4">Profitez de 3 jours d’essai gratuit, puis passez à l&apos;abonnement mensuel pour 9,90€/mois.</p>
         <p className="text-gray-600">Sans engagement. Résiliable à tout moment.</p>
       </section>
 
@@ -88,7 +88,7 @@ export default function LandingPage() {
           <Link href="/confidentialite" className="underline mr-4">Politique de confidentialité</Link>
           <Link href="/mentions-legales" className="underline">Mentions légales</Link>
         </p>
-        <p>© {new Date().getFullYear()} Facturation Simplifiée — Tous droits réservés.</p>
+        <p>© {new Date().getFullYear()} Alfred Facture — Tous droits réservés.</p>
       </footer>
     </main>
   )
