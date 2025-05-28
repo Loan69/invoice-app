@@ -1,15 +1,34 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function ResetPasswordPage() {
   const supabase = createClientComponentClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
   const [newPassword, setNewPassword] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Capture les tokens dans l'URL et crée la session
+  useEffect(() => {
+    const access_token = searchParams.get('access_token')
+    const refresh_token = searchParams.get('refresh_token')
+
+    if (access_token && refresh_token) {
+      supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      }).then(({ error }) => {
+        if (error) {
+          setMessage("Erreur lors de la récupération de session : " + error.message)
+        }
+      })
+    }
+  }, [searchParams])
 
   const handleUpdatePassword = async () => {
     setLoading(true)
