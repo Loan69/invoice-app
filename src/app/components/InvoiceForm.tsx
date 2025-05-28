@@ -228,7 +228,9 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
             <SelectContent>
               {clients.map((client) => (
                 <SelectItem key={client.id_int} value={client.id_int.toString()}>
-                  {client.company}
+                  {client.is_professional
+                    ? client.company
+                    : `${client.first_name} ${client.last_name}`}
                 </SelectItem>
               ))}
             </SelectContent>
