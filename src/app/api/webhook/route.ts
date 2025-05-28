@@ -19,10 +19,13 @@ export async function POST(req: NextRequest) {
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-  } catch (err: any) {
-    console.error('⚠️  Erreur de validation Stripe :', err.message)
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+    }
+    return new Response(`Webhook Error: Unknown error`, { status: 400 });
   }
+  
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
