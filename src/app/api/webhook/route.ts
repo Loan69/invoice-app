@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // ATTENTION : uniquement côté backend
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! // ATTENTION : uniquement côté backend
 )
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
