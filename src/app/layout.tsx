@@ -13,8 +13,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body>
       {appEnv === 'preprod' && (
-          <div className="w-full bg-yellow-600 text-black text-center p-2 text-sm font-semibold animate-pulse">
+          <div className="w-full bg-yellow-300 text-black text-center p-2 text-sm font-semibold animate-pulse">
             Environnement de PRÉPRODUCTION
+          </div>
+        )}
+      {appEnv === 'development' && (
+          <div className="w-full bg-green-600 text-black text-center p-2 text-sm font-semibold animate-pulse">
+            Environnement de DÉVELOPPEMENT
           </div>
         )}
         <Providers>

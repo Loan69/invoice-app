@@ -4,7 +4,19 @@ import Stripe from 'stripe'
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(req: NextRequest) {
-  const { userEmail } = await req.json()
+  const { userEmail, plan } = await req.json()
+
+  if (!userEmail || !plan) {
+    return NextResponse.json({ error: 'Email ou plan manquant' }, { status: 400 })
+  }
+
+  const priceId = plan === 'yearly'
+    ? process.env.STRIPE_PRICE_YEARLY_ID
+    : process.env.STRIPE_PRICE_MONTHLY_ID
+
+  if (!priceId) {
+    return NextResponse.json({ error: 'ID de prix Stripe manquant' }, { status: 500 })
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -12,13 +24,16 @@ export async function POST(req: NextRequest) {
       mode: 'subscription',
       line_items: [
         {
-          price: 'price_1RTmO9R8LMBWo5GHa5gLUa80',
+          price: priceId,
           quantity: 1,
         },
       ],
       customer_email: userEmail,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
+      subscription_data: {
+        trial_period_days: 3,
+      },
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/signup?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/landing?canceled=true`,
     })
 
     return NextResponse.json({ url: session.url })
@@ -28,5 +43,4 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ error: "Unknown error" }, { status: 500 });
   }
-  
 }
