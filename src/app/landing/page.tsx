@@ -23,9 +23,8 @@ export default function LandingPage() {
       })
 
       const data = await res.json()
-      console.log(data)
       if (data.url) {
-        //window.location.href = data.url
+        window.location.href = data.url
       } else {
         alert('Erreur lors de la redirection.')
       }
