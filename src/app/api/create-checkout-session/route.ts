@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
   const priceId = plan === 'yearly'
     ? process.env.STRIPE_PRICE_YEARLY_ID
     : process.env.STRIPE_PRICE_MONTHLY_ID
+  
+  console.log("APP_URL:", process.env.NEXT_PUBLIC_APP_URL)
 
   if (!priceId) {
     return NextResponse.json({ error: 'ID de prix Stripe manquant' }, { status: 500 })
