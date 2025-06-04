@@ -24,6 +24,7 @@ export default function LandingPage() {
 
       const data = await res.json()
       console.log(data)
+      console.log("APP_URL:", process.env.NEXT_PUBLIC_APP_URL)
       if (data.url) {
         //window.location.href = data.url
       } else {
