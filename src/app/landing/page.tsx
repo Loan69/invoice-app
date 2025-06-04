@@ -79,15 +79,15 @@ export default function LandingPage() {
         <h2 className="text-2xl font-semibold text-center mb-10">Ils en parlent mieux que nous</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"Enfin un outil simple et efficace pour gérer mes factures. Je recommande vivement !"</p>
+            <p className="italic">&quot;Enfin un outil simple et efficace pour gérer mes factures. Je recommande vivement !&ldquo;</p>
             <p className="mt-4 font-semibold">— Julien, graphiste freelance</p>
           </div>
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"J'ai pu envoyer ma première facture en 5 minutes. Interface claire, prise en main rapide."</p>
+            <p className="italic">&quot;J&apos;ai pu envoyer ma première facture en 5 minutes. Interface claire, prise en main rapide.&ldquo;</p>
             <p className="mt-4 font-semibold">— Marie, consultante</p>
           </div>
           <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-            <p className="italic">"Service client ultra réactif, et la génération PDF est nickel. Top !"</p>
+            <p className="italic">&quot;Service client ultra réactif, et la génération PDF est nickel. Top !&ldquo;</p>
             <p className="mt-4 font-semibold">— Samuel, développeur indépendant</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function LandingPage() {
       {/* Offres */}
       <section className="py-20 px-6 bg-gray-100 text-center">
         <h2 className="text-2xl font-semibold mb-6">Offres disponibles</h2>
-        <p className="text-lg mb-4">3 jours d’essai gratuit, puis choisissez la formule qui vous convient.</p>
+        <p className="text-lg mb-4">3 jours d&apos;essai gratuit, puis choisissez la formule qui vous convient.</p>
         <div className="flex justify-between items-center gap-8 mt-6">
           <div className="bg-white p-6 rounded-xl shadow-md w-72">
             <h3 className="text-xl font-semibold mb-2">Mensuel</h3>
