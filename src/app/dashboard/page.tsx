@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name, company, address, email, phone")
+        .select("*")
         .eq('id', user?.id)
         .maybeSingle();
       if (!error && data) {
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from("invoices")
         .select(`*,
-                clients (company, last_name, first_name, address, email)`)
+                clients (company, last_name, first_name, address, email, is_professional)`)
         .order('created_at', { ascending: false })
         .limit(5);
 
