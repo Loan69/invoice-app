@@ -27,7 +27,7 @@ export default function CGU() {
     
           <h2 className="text-xl font-semibold mt-6">5. Données personnelles</h2>
           <p className="mb-4">
-            Pour plus d’informations sur la collecte et le traitement des données, consultez notre <a href="/legal/confidentialite" className="text-blue-600 underline">Politique de confidentialité</a>.
+            Pour plus d’informations sur la collecte et le traitement des données, consultez notre <a href="/legal/politiqueConfidentialite" className="text-blue-600 underline">Politique de confidentialité</a>.
           </p>
     
           <h2 className="text-xl font-semibold mt-6">6. Propriété intellectuelle</h2>

@@ -98,18 +98,26 @@ export default function LandingPage() {
       <section className="py-20 px-6 bg-gray-100 text-center">
         <h2 className="text-2xl font-semibold mb-6">Offres disponibles</h2>
         <p className="text-lg mb-4">3 jours d&apos;essai gratuit, puis choisissez la formule qui vous convient.</p>
-        <div className="flex justify-between items-center gap-8 mt-6">
-          <div className="bg-white p-6 rounded-xl shadow-md w-72">
-            <h3 className="text-xl font-semibold mb-2">Mensuel</h3>
-            <p className="text-2xl font-bold mb-4">9,99€/mois</p>
-            <p className="text-gray-600">Sans engagement. Résiliable à tout moment.</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl shadow-md w-72 border border-blue-600">
-            <h3 className="text-xl font-semibold mb-2">Annuel</h3>
-            <p className="text-2xl font-bold mb-4">99,90€/an</p>
-            <p className="text-blue-600 font-medium">2 mois offerts</p>
+        <div className="flex justify-between items-center gap-8 mt-6 flex-wrap justify-center">
+        {/* Offre Mensuelle */}
+        <div className={`bg-white p-6 rounded-xl shadow-md w-72 border-2 transition ${
+          selectedPlan === 'monthly' ? 'border-blue-600' : 'border-transparent'
+        }`}>
+          <h3 className="text-xl font-semibold mb-2">Mensuel</h3>
+          <p className="text-2xl font-bold mb-4">9,99€/mois</p>
+          <p className="text-gray-600">Sans engagement. Résiliable à tout moment.</p>
+        </div>
+
+        {/* Offre Annuelle */}
+        <div className={`bg-white p-6 rounded-xl shadow-md w-72 border-2 transition ${
+          selectedPlan === 'yearly' ? 'border-blue-600' : 'border-transparent'
+          }`}>
+          <h3 className="text-xl font-semibold mb-2">Annuel</h3>
+          <p className="text-2xl font-bold mb-4">99,90€/an</p>
+          <p className="text-blue-600 font-medium">2 mois offerts</p>
           </div>
         </div>
+
       </section>
 
       <footer className="text-sm text-gray-600 text-center py-10 bg-white border-t">
