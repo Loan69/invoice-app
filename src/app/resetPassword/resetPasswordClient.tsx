@@ -1,47 +1,52 @@
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
-export default function ResetPasswordClient() {
+export default function ResetPasswordPage() {
   const supabase = createClientComponentClient()
-  const searchParams = useSearchParams()
   const router = useRouter()
 
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [refreshToken, setRefreshToken] = useState<string | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Récupérer l'access_token dans l'URL
-  const accessToken = searchParams.get('access_token')
-
-  // Dès que la page charge, on tente d'établir la session à partir du token (optionnel)
   useEffect(() => {
-    if (!accessToken) {
-      setMessage('Token de réinitialisation manquant ou invalide.')
+    const hash = window.location.hash
+    const params = new URLSearchParams(hash.substring(1))
+    const access_token = params.get('access_token')
+    const refresh_token = params.get('refresh_token')
+
+    if (access_token && refresh_token) {
+      setAccessToken(access_token)
+      setRefreshToken(refresh_token)
+
+      // 👇 Crée une session active AVANT de mettre à jour le mot de passe
+      supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      })
     } else {
-      // Optionnel : on peut essayer de stocker ce token en session
-      // supabase.auth.setSession({ access_token: accessToken })  // pas dispo côté client dans cette lib
-      // Normalement pas nécessaire, supabase gère ça automatiquement si le token est dans l'URL
+      setMessage('Token de réinitialisation manquant ou invalide.')
     }
-  }, [accessToken])
+  }, [])
 
   const handleUpdatePassword = async () => {
     if (!accessToken) {
-      setMessage('Token manquant, impossible de mettre à jour le mot de passe.')
+      setMessage("Session non initialisée, impossible de changer le mot de passe.")
       return
     }
 
     setLoading(true)
-
-    // Cette fonction utilise le token pour changer le mot de passe sans être connecté
     const { error } = await supabase.auth.updateUser({ password: newPassword })
 
     if (error) {
       setMessage("Erreur : " + error.message)
     } else {
-      setMessage("Mot de passe mis à jour. Redirection en cours...")
+      setMessage("Mot de passe mis à jour ! Redirection en cours...")
       setTimeout(() => router.push('/dashboard'), 2000)
     }
     setLoading(false)

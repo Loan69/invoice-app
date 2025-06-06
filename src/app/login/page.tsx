@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import Header from '../components/Header'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
 
 
 export default function LoginPage() {
@@ -14,6 +14,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter()
+
+  useEffect(() => {
+    const email = localStorage.getItem("pendingEmail");
+    if (email) {
+      setEmail(email);
+      localStorage.removeItem("pendingEmail"); // Optionnel
+    }
+  }, []);
+  
   
 
   const handleLogin = async () => {
@@ -56,6 +65,7 @@ export default function LoginPage() {
         <input
           className="w-full p-2 border rounded"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
@@ -74,13 +84,14 @@ export default function LoginPage() {
           </button>
 
           {/* Réinitialisation du mot de passe */}
+          {/* Désactivé pour le moment
           <Link
             href='/forgotPassword'
           >
             <p className="text-sm text-blue-600 hover:underline">
               Mot de passe oublié ?
             </p>
-          </Link>
+          </Link>*/}
         </div>
 
         {/* Message d'erreur s'il y en a un */}

@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { useUser } from '@supabase/auth-helpers-react';
 import Header from '../components/Header';
 
+
 export default function CompleteProfilePage() {
   const supabaseClient = supabase;
   const router = useRouter();
@@ -21,7 +22,14 @@ export default function CompleteProfilePage() {
   const user = useUser();
 
   useEffect(() => {
-  }, []);
+    if (!user) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (!data.user) {
+          router.push('/login');
+        }
+      });
+    }
+  }, [user]);
 
   const handleSubmit = async () => {
     if (!user?.id) {

@@ -4,11 +4,18 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import Link from 'next/link';
 import { supabase } from '@/app/lib/supabase';
+import { useSearchParams } from 'next/navigation';
+
 
 export default function SignupPage() {
 
+  // Récupération de l'email si l'utilisateur vient par la landing
+  const searchParams = useSearchParams();
+  const emailFromURL = searchParams.get('email') || '';
+  const [email, setEmail] = useState(emailFromURL);
+
+
   // États pour inputs et messages
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -19,11 +26,13 @@ export default function SignupPage() {
     setMessage(null);
 
     try {
+      // Enregistre l'adresse mail saisie
+      localStorage.setItem("pendingEmail", email);
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+          emailRedirectTo: `${window.location.origin}/login`,
         },
       });
 

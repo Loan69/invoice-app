@@ -114,9 +114,9 @@ export default function LandingPage() {
 
       <footer className="text-sm text-gray-600 text-center py-10 bg-white border-t">
         <p className="mb-2">
-          <Link href="/cgu" className="underline mr-4">CGU</Link>
-          <Link href="/confidentialite" className="underline mr-4">Politique de confidentialité</Link>
-          <Link href="/mentions-legales" className="underline">Mentions légales</Link>
+          <Link href="/legal/cgu" className="underline mr-4">CGU</Link>
+          <Link href="/legal/politiqueConfidentialite" className="underline mr-4">Politique de confidentialité</Link>
+          <Link href="/legal/mentionsLegales" className="underline">Mentions légales</Link>
         </p>
         <p>© {new Date().getFullYear()} Alfred Facture — Tous droits réservés.</p>
       </footer>
