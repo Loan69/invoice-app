@@ -9,7 +9,6 @@ export default function ResetPasswordPage() {
   const router = useRouter()
 
   const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [refreshToken, setRefreshToken] = useState<string | null>(null)
   const [newPassword, setNewPassword] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,7 +21,6 @@ export default function ResetPasswordPage() {
 
     if (access_token && refresh_token) {
       setAccessToken(access_token)
-      setRefreshToken(refresh_token)
 
       // 👇 Crée une session active AVANT de mettre à jour le mot de passe
       supabase.auth.setSession({
