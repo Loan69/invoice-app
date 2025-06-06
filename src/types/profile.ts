@@ -8,7 +8,11 @@ export interface Profile {
     company?: string;
     phone?: string;
     siret?: string;
-    rib?: string;
+    bank_details?: {
+      iban?: string;
+      bic?: string;
+      bank_name?: string;
+    };
     vat_applicable?: boolean;
     tax_status?: string;
     created_at?: string;

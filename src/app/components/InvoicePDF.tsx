@@ -61,6 +61,23 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
+  ribBox: {
+    marginTop: 20,
+    padding: 10,
+    border: '1px solid #000',
+    borderRadius: 4,
+    backgroundColor: '#f5f5f5',
+  },
+  ribTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    fontSize: 12,
+  },
+  ribText: {
+    fontSize: 11,
+    lineHeight: 1.5,
+  },
+  
 });
 
 export default function InvoicePDF({ invoice, profile }: Props) {
@@ -174,13 +191,18 @@ export default function InvoicePDF({ invoice, profile }: Props) {
           <Text>• Paiement à réception</Text>
           <Text>• Pénalités de retard : 10% du montant TTC</Text>
           <Text>• {tvaLabel}</Text>
-          {invoice.clients?.is_professional === true && profile.rib && (
-            <View style={{ marginTop: 8 }}>
-              <Text style={{ fontWeight: 'bold' }}>Coordonnées bancaires :</Text>
-              <Text>{profile.rib}</Text>
+        </View>
+
+          {/* Coordonnées bancaires */}
+          {invoice.clients?.is_professional === true && (
+            <View style={styles.ribBox}>
+              <Text style={styles.ribTitle}>Coordonnées bancaires</Text>
+              <Text style={styles.ribText}>IBAN : {profile.bank_details?.iban}</Text>
+              <Text style={styles.ribText}>BIC : {profile.bank_details?.bic}</Text>
+              <Text style={styles.ribText}>Banque : {profile.bank_details?.bank_name}</Text>
             </View>
           )}
-        </View>
+
       </Page>
     </Document>
   );

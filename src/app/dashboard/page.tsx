@@ -46,6 +46,8 @@ export default function DashboardPage() {
 
   }, [user]);
 
+  console.log(profile?.bank_details?.bank_name)
+
   // Récupération des derniers clients à afficher
   useEffect(() => {
     const fetchClients = async () => {

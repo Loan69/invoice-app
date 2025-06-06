@@ -33,7 +33,11 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
         tax_status: 'Éxonéré',
         company: '',
         siret: '',
-        rib: '',
+        bank_details: {
+          iban: '',
+          bic: '',
+          bank_name: '',
+        },
       });
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -50,31 +54,51 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             tax_status: profileData.vat_applicable ? (profileData.tax_status || '') : 'Exonéré',
             company: profileData.company || '',
             siret: profileData.siret || '',
-            rib: profileData.rib || '',
+            bank_details: {
+              iban: profileData.bank_details?.iban || '',
+              bic: profileData.bank_details?.bic || '',
+              bank_name: profileData.bank_details?.bank_name || '',
+            },
           });
         }
       }, [profileData]);
 
     // Modification d'un champ
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, type, value, checked } = e.target;
-      
-        setProfileForm((prev) => {
-          let updatedForm = {
-              ...prev,
-              [name]: type === "checkbox" ? checked : value,
+      const { name, type, value, checked } = e.target;
+    
+      setProfileForm((prev) => {
+        let updatedForm;
+    
+        if (name.includes('.')) {
+          // Gérer les champs imbriqués comme "bank_details.bic"
+          const [parentKey, childKey] = name.split('.') as [keyof typeof prev, string];
+          const parentValue = (prev[parentKey] ?? {}) as Record<string, any>;
+    
+          updatedForm = {
+            ...prev,
+            [parentKey]: {
+              ...parentValue,
+              [childKey]: value,
+            },
           };
-  
-          // Si TVA décochée, on force le statut fiscal à Exonéré
-          if (name === "vat_applicable" && !checked) {
-              updatedForm.tax_status = "Exonéré";
-          }
-  
-          return updatedForm;
+        } else {
+          updatedForm = {
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+          };
+        }
+    
+        // Si TVA décochée, on force le statut fiscal à Exonéré
+        if (name === "vat_applicable" && !checked) {
+          updatedForm.tax_status = "Exonéré";
+        }
+    
+        return updatedForm;
       });
-        if (setIsDirty) setIsDirty(true);
-      };
-      
+    
+      if (setIsDirty) setIsDirty(true);
+    };    
 
     // Enregistrement des informations de l'utilisateur
     const handleSubmit = async (e: React.FormEvent) => {
@@ -143,14 +167,33 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
-            <input
-              type="text"
-              name="rib"
-              placeholder="RIB"
-              value={profileForm.rib}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Coordonnées bancaires</label>
+              <input
+                type="text"
+                name="bank_details.iban"
+                placeholder="IBAN"
+                value={profileForm.bank_details.iban}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
+              <input
+                type="text"
+                name="bank_details.bic"
+                placeholder="BIC"
+                value={profileForm.bank_details.bic}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
+              <input
+                type="text"
+                name="bank_details.bank_name"
+                placeholder="Nom de la banque"
+                value={profileForm.bank_details.bank_name}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
+            </div>
 
             <input
               type="text"
