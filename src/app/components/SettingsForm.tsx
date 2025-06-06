@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { Profile } from "@/types/profile";
+import { Profile, BankDetails } from "@/types/profile";
 import { useUser } from "@supabase/auth-helpers-react";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -67,38 +67,42 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, type, value, checked } = e.target;
     
+      // Vérifie si le nom du champ contient un point (ex: "bank_details.bic")
+      const isNested = name.includes(".");
+    
       setProfileForm((prev) => {
-        let updatedForm;
+        let updatedForm = { ...prev };
     
-        if (name.includes('.')) {
-          // Gérer les champs imbriqués comme "bank_details.bic"
-          const [parentKey, childKey] = name.split('.') as [keyof typeof prev, string];
-          const parentValue = (prev[parentKey] ?? {}) as Record<string, any>;
+        if (isNested) {
+          const [parentKey, childKey] = name.split(".") as ["bank_details", keyof BankDetails];
     
-          updatedForm = {
-            ...prev,
-            [parentKey]: {
-              ...parentValue,
-              [childKey]: value,
-            },
-          };
+          if (parentKey === "bank_details") {
+            updatedForm = {
+              ...prev,
+              bank_details: {
+                ...(prev.bank_details ?? {}),
+                [childKey]: value,
+              },
+            };
+          }
         } else {
           updatedForm = {
             ...prev,
             [name]: type === "checkbox" ? checked : value,
           };
-        }
     
-        // Si TVA décochée, on force le statut fiscal à Exonéré
-        if (name === "vat_applicable" && !checked) {
-          updatedForm.tax_status = "Exonéré";
+          // Si TVA décochée, alors on force le statut fiscal à "Exonéré"
+          if (name === "vat_applicable" && !checked) {
+            updatedForm.tax_status = "Exonéré";
+          }
         }
     
         return updatedForm;
       });
     
       if (setIsDirty) setIsDirty(true);
-    };    
+    };
+    
 
     // Enregistrement des informations de l'utilisateur
     const handleSubmit = async (e: React.FormEvent) => {
