@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import { useUser } from '@supabase/auth-helpers-react';
 import Header from '../components/Header';
+import { Profile } from '@/types/profile';
 
 
 export default function CompleteProfilePage() {
@@ -41,7 +42,7 @@ export default function CompleteProfilePage() {
     const now = new Date();
     const demoExpiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // Ajoute 3 jours
 
-    const profileData: any = {
+    const profileData: Profile = {
       id: user.id,
       email: user.email,
       first_name: firstName,
@@ -61,8 +62,8 @@ export default function CompleteProfilePage() {
     } else if (origin === 'direct') {
       // Utilisateur qui vient de l'abonnement payant
       profileData.is_demo = false
-      profileData.demo_started_at = null
-      profileData.demo_expires_at = null
+      profileData.demo_started_at = ''
+      profileData.demo_expires_at = ''
       profileData.is_subscribed = true
       profileData.subscription_started_at = now.toISOString()
     } else {

@@ -18,7 +18,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SubscriptionBadge from '../components/SubscriptionBadge';
 
-export default function dashboardPage() {
+export default function DashboardPage() {
   const supabase = createClientComponentClient()
   const user = useUser()
   const router = useRouter()
