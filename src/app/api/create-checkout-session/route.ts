@@ -29,10 +29,7 @@ export async function POST(req: NextRequest) {
         },
       ],
       customer_email: userEmail,
-      subscription_data: {
-        trial_period_days: 3,
-      },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/signup?success=true&email=${userEmail}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/aboSuccess?success=true&email=${userEmail}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/landing?canceled=true`,
     })
 

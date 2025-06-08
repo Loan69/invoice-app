@@ -20,4 +20,6 @@ export interface Profile {
   created_at?: string;
   updated_at?: string;
   bank_details?: BankDetails;
+  is_demo?: boolean;
+  is_subscribed?: boolean;
 }

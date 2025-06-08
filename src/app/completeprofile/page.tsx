@@ -18,6 +18,7 @@ export default function CompleteProfilePage() {
   const [siret, setSiret] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const origin = localStorage.getItem('origin') // 'demo' ou 'direct' ou null
 
   const user = useUser();
 
@@ -37,7 +38,10 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    const { error } = await supabaseClient.from('profiles').insert({
+    const now = new Date();
+    const demoExpiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // Ajoute 3 jours
+
+    const profileData: any = {
       id: user.id,
       email: user.email,
       first_name: firstName,
@@ -46,7 +50,29 @@ export default function CompleteProfilePage() {
       address: address,
       siret: siret,
       phone: phone,
-    });
+      is_subscribed: false,
+    }
+
+    if (origin === 'demo') {
+      // Utilisateur en période d'essai demo
+      profileData.is_demo = true
+      profileData.demo_started_at = now.toISOString()
+      profileData.demo_expires_at = demoExpiresAt.toISOString()
+    } else if (origin === 'direct') {
+      // Utilisateur qui vient de l'abonnement payant
+      profileData.is_demo = false
+      profileData.demo_started_at = null
+      profileData.demo_expires_at = null
+      profileData.is_subscribed = true
+      profileData.subscription_started_at = now.toISOString()
+    } else {
+      // Cas par défaut (pas de démo, pas abonné)
+      profileData.is_demo = false
+      profileData.is_subscribed = false
+    }
+
+    const { error } = await supabaseClient.from('profiles').insert(profileData)
+
 
     if (error) {
       setMessage("Erreur lors de l'enregistrement : " + error.message);
