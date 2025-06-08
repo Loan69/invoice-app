@@ -1,4 +1,4 @@
-import AboSuccessClient from './AboSuccessClient'
+import AboSuccessClient from './aboSuccessClient'
 
 export default function AboSuccessPage() {
   return <AboSuccessClient />
