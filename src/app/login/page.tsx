@@ -39,7 +39,7 @@ export default function LoginPage() {
     // Vérifier si un profil existe dans la table profiles
     const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id')
+    .select('*')
     .eq('id', userId)
     .single();
 
@@ -47,6 +47,20 @@ export default function LoginPage() {
       // Si ce n'est pas le cas, on dirige vers la page de complétion du profil
       router.push('/completeProfile');
     } else {
+      //  Vérifier si la démo a expiré
+      if (profile.is_demo && profile.demo_started_at) {
+        const demoStart = new Date(profile.demo_started_at);
+        const now = new Date();
+        const diffInDays = (now.getTime() - demoStart.getTime()) / (1000 * 60 * 60 * 24);
+
+        if (diffInDays > 3) {
+          // Mettre à jour is_demo = false
+          await supabase
+            .from('profiles')
+            .update({ is_demo: false })
+            .eq('id', userId);
+    }
+  }
       // Sinon, on dirige vers le dashboard de l'utilisateur
       router.push('/dashboard');
     }
