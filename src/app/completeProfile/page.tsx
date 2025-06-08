@@ -67,8 +67,8 @@ export default function CompleteProfilePage() {
     } else if (origin === 'direct') {
       // Utilisateur qui vient de l'abonnement payant
       profileData.is_demo = false
-      profileData.demo_started_at = ''
-      profileData.demo_expires_at = ''
+      profileData.demo_started_at = null
+      profileData.demo_expires_at = null
       profileData.is_subscribed = true
       profileData.subscription_started_at = now.toISOString()
     } else {

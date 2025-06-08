@@ -22,7 +22,7 @@ export interface Profile {
   bank_details?: BankDetails;
   is_demo?: boolean;
   is_subscribed?: boolean;
-  demo_started_at?: string;
-  demo_expires_at?: string;
-  subscription_started_at?: string;
+  demo_started_at?: string | null;
+  demo_expires_at?: string | null;
+  subscription_started_at?: string | null;
 }
