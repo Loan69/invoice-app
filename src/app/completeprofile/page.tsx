@@ -19,9 +19,14 @@ export default function CompleteProfilePage() {
   const [siret, setSiret] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState<string | null>(null);
-  const origin = localStorage.getItem('origin') // 'demo' ou 'direct' ou null
+  const [origin, setOrigin] = useState<string | null>(null)
 
   const user = useUser();
+
+  useEffect(() => {
+    const originStored = localStorage.getItem('origin')  // 'demo' ou 'direct' ou null
+    setOrigin(originStored)
+  }, [])
 
   useEffect(() => {
     if (!user) {
