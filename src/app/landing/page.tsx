@@ -59,7 +59,7 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-white text-gray-900 pt-10">
+      <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-white text-gray-900 pt-24">
        
         <p className="text-lg mb-8 text-center max-w-xl">
           Générez vos factures automatiquement, suivez vos paiements, et restez conforme.
