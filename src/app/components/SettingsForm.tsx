@@ -136,7 +136,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full"
         >
           <div className="flex justify-between">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type d'abonnement : </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type d&apos;abonnement : </label>
               {profileForm.abo_plan ? (
               <span
                 className={`px-2 py-1 rounded text-white text-sm ${
