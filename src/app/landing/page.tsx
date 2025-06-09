@@ -90,7 +90,7 @@ export default function LandingPage() {
 
 
         {/* Offres */}
-        <section className="mt-5 py-5 px-6 bg-gray-100 text-center">
+        <section className="mt-5 py-5 px-6 bg-gray-100 text-center rounded">
           <h2 className="text-2xl font-semibold mb-6">Offres disponibles</h2>
           <p className="text-lg mb-4">3 jours d&apos;essai gratuit, puis choisissez la formule qui vous convient.</p>
           <div className="flex justify-between items-center gap-8 mt-6 flex-wrap justify-center">

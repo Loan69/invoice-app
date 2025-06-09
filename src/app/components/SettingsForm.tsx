@@ -38,6 +38,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
           bic: '',
           bank_name: '',
         },
+        abo_plan: '',
       });
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -59,6 +60,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               bic: profileData.bank_details?.bic || '',
               bank_name: profileData.bank_details?.bank_name || '',
             },
+            abo_plan: profileData.abo_plan || '',
           });
         }
       }, [profileData]);
@@ -133,8 +135,22 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             onSubmit={handleSubmit}
             className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full"
         >
-    
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex justify-between">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type d'abonnement : </label>
+              {profileForm.abo_plan ? (
+              <span
+                className={`px-2 py-1 rounded text-white text-sm ${
+                  profileForm.abo_plan === "yearly" ? "bg-green-600" : "bg-blue-600"
+                }`}
+              >
+                {profileForm.abo_plan === "yearly" ? "Abonnement annuel" : "Abonnement mensuel"}
+              </span>
+            ) : (
+              <span className="text-gray-500">Non renseigné</span>
+            )}
+          </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
               <input
                   type="text"
                   name="first_name"
@@ -214,6 +230,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               placeholder="Adresse mail"
               value={profileForm.email}
               onChange={handleChange}
+              disabled
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 

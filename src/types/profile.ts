@@ -25,4 +25,5 @@ export interface Profile {
   demo_started_at?: string | null;
   demo_expires_at?: string | null;
   subscription_started_at?: string | null;
+  abo_plan? : string | null;
 }
