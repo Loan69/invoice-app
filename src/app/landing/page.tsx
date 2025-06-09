@@ -48,7 +48,7 @@ export default function LandingPage() {
             href="/signup"
             className="px-4 py-2 rounded-md border border-blue-600 text-blue-600 font-medium hover:bg-blue-600 hover:text-white transition"
           >
-            S'inscrire
+            S&apos;inscrire
           </Link>
           <Link
             href="/login"
