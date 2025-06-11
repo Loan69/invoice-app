@@ -8,5 +8,7 @@ export interface Invoice {
     updated_at?: string;
     client_id: number;
     user_id: string;
+    is_credit_note?: boolean;
+    original_invoice_id?: number;
   }
   

@@ -13,40 +13,36 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUser } from "@supabase/auth-helpers-react";
 import { Profile } from "@/types/profile";
 
+
 export default function FacturesList() {
   const user = useUser();
   const [profile, setProfile] = useState<Profile>();
   const supabase = createClientComponentClient();
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
-  const router = useRouter()
+  const router = useRouter();
 
-  // Récupération des données de l'utilisateur
   useEffect(() => {
     const fetchUser = async () => {
-      if (!user) return  // ne fait rien si pas de user
-
+      if (!user) return;
       const { data, error } = await supabase
         .from("profiles")
         .select("id, first_name, company, address, email, phone")
-        .eq('id', user?.id)
+        .eq("id", user?.id)
         .maybeSingle();
       if (!error && data) {
         setProfile(data);
       } else {
-        console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
+        console.error("Erreur lors de la récupération du profil :", error);
       }
     };
-    
-    fetchUser();
 
+    fetchUser();
   }, [user]);
 
-  // Conversion du format date en version française
   const formatDateFR = (dateStr: string) => {
     const [year, month, day] = dateStr.split("-");
     return `${day}-${month}-${year}`;
   };
-  
 
   useEffect(() => {
     const fetchFactures = async () => {
@@ -55,53 +51,55 @@ export default function FacturesList() {
         .select(`
           *,
           clients (
-            company
+            company, is_professional, last_name, first_name
           )
         `);
-  
+
       if (error) console.error("Erreur pour récupérer les données :", error.message);
       else setInvoices(data);
     };
-  
+
     fetchFactures();
   }, []);
 
   const returnToDashboard = () => {
-    router.push('/dashboard')
+    router.push('/dashboard');
   };
 
-  // Méthode de suppression d'une facture
-  const handleDelete = async (invoiceId: number) => {
-    const confirmDelete = window.confirm(
-      "Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
+  const handleCreateCreditNote = async (invoiceId: number) => {
+    const confirmCreate = window.confirm(
+      "Confirmez-vous la création d’un avoir pour cette facture ? Cette action est irréversible."
     );
   
-    if (!confirmDelete) return;
+    if (!confirmCreate) return;
   
     try {
-      const { error: invoiceError } = await supabase
-        .from("invoices")
-        .delete()
-        .eq("id_int", invoiceId);
+      const res = await fetch('/api/create-credit-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceId }),
+      });
   
-      if (invoiceError) {
-        console.error("Erreur lors de la suppression des factures :", invoiceError.message);
-        alert("Erreur lors de la suppression des factures associées.");
+      const result = await res.json();
+  
+      if (!res.ok) {
+        console.error("Erreur lors de la création de l'avoir :", result.error);
+        alert("Erreur : " + result.error);
         return;
       }
-      // Actualiser l'affichage ou retirer la facture supprimée de l'état local
-      setInvoices((prev) => prev.filter((invoice) => invoice.id_int !== invoiceId));
+  
+      alert("Avoir créé avec succès !");
+      // Rechargement des factures
+      setInvoices((prev) => [...prev]); // ou refetcher depuis Supabase si besoin
     } catch (error) {
-      console.error("Erreur inattendue :", error);
+      console.error("Erreur réseau :", error);
       alert("Une erreur est survenue.");
     }
   };
 
   return (
     <div>
-      {/* Header avec logo */}
       <Header />
-
       <div className="p-8 max-w-5xl mx-auto">
         <div className="flex justify-between w-full items-center mb-6">
           <h1 className="text-2xl font-bold mb-6">Liste des factures</h1>
@@ -118,59 +116,65 @@ export default function FacturesList() {
           <table className="min-w-full text-sm border">
             <thead className="bg-gray-100">
               <tr>
-              <th className="px-4 py-2 text-left">Facture</th>
+                <th className="px-4 py-2 text-left">Facture</th>
                 <th className="px-4 py-2 text-left">Date</th>
                 <th className="px-4 py-2 text-left">Client</th>
                 <th className="px-4 py-2 text-left">Montant</th>
                 <th className="px-4 py-2 text-left">Statut</th>
-                <th className="px-4 py-2">Éditer la facture</th>
-                <th className="px-4 py-2">Télécharger la facture</th>
-                <th className="px-4 py-2">Supprimer la facture</th>
+                <th className="px-4 py-2">Éditer</th>
+                <th className="px-4 py-2">Télécharger</th>
+                <th className="px-4 py-2">Avoir</th>
               </tr>
             </thead>
             <tbody>
               {invoices.map((invoice) => (
                 <tr key={invoice.id_int} className="border-t">
-                  <td className="px-4 py-2">{invoice.id_int.toString().padStart(4, "0")}</td>
+                  <td className="px-4 py-2">
+                    {invoice.is_credit_note ? (
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono text-sm">AV-{invoice.id_int.toString().padStart(4, "0")}</span>
+                        <span className="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded-full font-semibold">AVOIR</span>
+                      </span>
+                    ) : (
+                      <span className="font-mono text-sm">F-{invoice.id_int.toString().padStart(4, "0")}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2">{formatDateFR(invoice.datefac)}</td>
-                  <td>{invoice.clients?.company}</td>
+                  <td className="px-4 py-2">{invoice.clients?.is_professional}
+                    {invoice.clients?.is_professional ? invoice.clients?.company : `${invoice.clients?.last_name ?? ''} ${invoice.clients?.first_name ?? ''}`}
+                  </td>
                   <td className="px-4 py-2">{invoice.amount} €</td>
                   <td className="px-4 py-2">{invoice.status}</td>
                   <td className="px-4 py-2 text-center">
                     <Link href={`/invoices/${invoice.id_int}/edit`}>
-                      <Button variant="outline" className="cursor-pointer">Éditer</Button>
+                      <Button variant="outline">Éditer</Button>
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-center">
-                  {profile && (
-                  <PDFDownloadLink
-                    document={
-                      <InvoicePDF
-                        invoice={invoice}
-                        profile={profile}
-                      />
-                    }
-                    fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
-                  >
-                    {({ loading }) =>
-                      loading ? (
-                        <span className="text-xs text-gray-400">Chargement…</span>
-                      ) : (
-                        <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
-                          Télécharger
-                        </Button>
-                      )
-                    }
-                  </PDFDownloadLink>
-                )}
+                    {profile && invoice.clients && (
+                      <PDFDownloadLink
+                        document={<InvoicePDF invoice={invoice} profile={profile} />}
+                        fileName={`${invoice.is_credit_note ? 'avoir' : 'facture'}_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company ?? 'client'}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
+                         >
+                        {({ loading }) =>
+                          loading ? (
+                            <span className="text-xs text-gray-400">Chargement…</span>
+                          ) : (
+                            <Button variant="ghost" className="text-xs px-2 py-1">Télécharger</Button>
+                          )
+                        }
+                      </PDFDownloadLink>
+                    )}
                   </td>
                   <td className="text-center">
-                    <button
-                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white cursor-pointer"
-                      onClick={() => handleDelete(invoice.id_int)}
+                    <Button
+                      onClick={() => handleCreateCreditNote(invoice.id_int)}
+                      variant="destructive"
+                      className="text-xs px-2 py-1 cursor-pointer"
+                      disabled={invoice.is_credit_note}
                     >
-                      Supprimer
-                    </button>
+                      {invoice.is_credit_note ? "Déjà un avoir" : "Créer un avoir"}
+                    </Button>
                   </td>
                 </tr>
               ))}

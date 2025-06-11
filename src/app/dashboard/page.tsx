@@ -246,12 +246,7 @@ export default function DashboardPage() {
                 </Link>
                 {profile && (
                   <PDFDownloadLink
-                    document={
-                      <InvoicePDF
-                        invoice={invoice}
-                        profile={profile}
-                      />
-                    }
+                    document={ <InvoicePDF invoice={invoice} profile={profile} />}
                     fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
                   >
                     {({ loading }) =>

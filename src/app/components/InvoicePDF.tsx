@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 1.5,
   },
+
   
 });
 
@@ -122,13 +123,16 @@ export default function InvoicePDF({ invoice, profile }: Props) {
       <Page size="A4" style={styles.page}>
         {/* Titre */}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Facture</Text>
+          <Text style={styles.title}>{invoice.is_credit_note ? 'AVOIR' : 'FACTURE'}</Text>
         </View>
 
         {/* Informations facture */}
         <View style={styles.invoiceInfoBox}>
           <Text style={styles.invoiceInfoText}>
-            <Text style={styles.bold}>Facture n° {invoice.id_int.toString().padStart(4, '0')}</Text>
+            <Text style={styles.bold}>{invoice.is_credit_note
+              ? `Ce document annule la facture F-${invoice.original_invoice_id?.toString().padStart(4, '0')}`
+              : `Facture n° F-${invoice.id_int.toString().padStart(4, '0')}`}
+            </Text>
           </Text>
           <Text style={styles.invoiceInfoText}>
             <Text style={styles.bold}>Date : {datefac.toLocaleDateString()}</Text>
@@ -144,6 +148,7 @@ export default function InvoicePDF({ invoice, profile }: Props) {
           <Text>Adresse : {profile.address}</Text>
           <Text>Siret : {profile.siret}</Text>
           <Text>Email : {profile.email}</Text>
+          <Text>Téléphone : {profile.phone}</Text>
         </View>
 
         {/* Client */}
