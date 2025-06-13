@@ -19,13 +19,16 @@ export default function CompleteProfilePage() {
   const [siret, setSiret] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState<string | null>(null);
-  const [origin, setOrigin] = useState<string | null>(null)
+  const [origin, setOrigin] = useState<string | null>(null);
+  const [aboPlan, setAboPlan] = useState<string | null>(null);
 
   const user = useUser();
 
   useEffect(() => {
     const originStored = localStorage.getItem('origin')  // 'demo' ou 'direct' ou null
+    const aboPlanStored = localStorage.getItem('abo_plan') // 'monthly' ou 'yearly' ou null
     setOrigin(originStored)
+    setAboPlan(aboPlanStored)
   }, [])
 
   useEffect(() => {
@@ -57,6 +60,7 @@ export default function CompleteProfilePage() {
       siret: siret,
       phone: phone,
       is_subscribed: false,
+      abo_plan: aboPlan,
     }
 
     if (origin === 'demo') {

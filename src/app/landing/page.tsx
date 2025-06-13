@@ -17,6 +17,7 @@ export default function LandingPage() {
     setLoading(true)
     try {
       localStorage.setItem('origin', 'direct')
+      localStorage.setItem('abo_plan', selectedPlan);
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -44,12 +45,6 @@ export default function LandingPage() {
        <header className="fixed top-0 right-0 left-0 flex justify-between items-center p-4 bg-white shadow-sm z-50">
         <h1 className="text-2xl font-bold">Alfred Facture - Facturation simplifiée pour entrepreneurs</h1>
         <nav className="space-x-4">
-          <Link
-            href="/signup"
-            className="px-4 py-2 rounded-md border border-blue-600 text-blue-600 font-medium hover:bg-blue-600 hover:text-white transition"
-          >
-            S&apos;inscrire
-          </Link>
           <Link
             href="/login"
             className="px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition"

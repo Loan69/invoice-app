@@ -26,6 +26,7 @@ export default function AbonnementExpirePage() {
     setLoading(true)
     try {
       localStorage.setItem('origin', 'aboExpire')
+      localStorage.setItem('abo_plan', selectedPlan);
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

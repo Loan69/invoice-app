@@ -13,12 +13,15 @@ export default function AboSuccessClient() {
   const emailFromUrl = searchParams.get('email')
   const user = useUser()
   const [origin, setOrigin] = useState<string | null>(null)
+  const [aboPlan, setAboPlan] = useState<string | null>(null)
 
   useEffect(() => {
     // Lecture de localStorage uniquement côté client
     if (typeof window !== 'undefined') {
       const storedOrigin = localStorage.getItem('origin')
+      const storedAboPlan = localStorage.getItem('abo_plan')
       setOrigin(storedOrigin)
+      setAboPlan(storedAboPlan)
     }
   }, [])
 
@@ -38,6 +41,7 @@ export default function AboSuccessClient() {
             is_subscribed: true,
             is_demo: false,
             subscription_started_at: new Date().toISOString(),
+            abo_plan: aboPlan,
           })
           .eq('id', user.id)
 

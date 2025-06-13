@@ -231,7 +231,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               value={profileForm.email}
               onChange={handleChange}
               disabled
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
             />
 
             <input
