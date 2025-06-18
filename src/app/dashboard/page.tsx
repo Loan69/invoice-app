@@ -307,7 +307,7 @@ export default function DashboardPage() {
 
       {/* Footer */}
       <footer className="text-center text-xs text-gray-400 mt-10">
-        © {new Date().getFullYear()} Alfred-Facture. Tous droits réservés. <Link href="/mentions-legales" className="underline ml-1">Mentions légales</Link>
+        © {new Date().getFullYear()} Alfred Facture. Tous droits réservés. <Link href="/legal/mentionsLegales" className="underline ml-1">Mentions légales</Link>
       </footer>
     </div>
   );
