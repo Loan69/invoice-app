@@ -2,7 +2,7 @@ import './globals.css'
 import { Providers } from './providers'
 
 export const metadata = {
-  title: 'Mon App',
+  title: 'Alfred Facture',
   description: 'Logiciel de gestion et d&apos;édition de facture pour entrepreneurs',
 }
 

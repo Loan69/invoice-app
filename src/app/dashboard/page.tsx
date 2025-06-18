@@ -293,7 +293,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex justify-around mt-4 text-center">
               <div>
-                <p className="text-lg font-semibold">{totalRevenue}</p>
+                <p className="text-lg font-semibold">{totalRevenue} €</p>
                 <p className="text-xs text-gray-500">Total encaissé</p>
               </div>
               <div>

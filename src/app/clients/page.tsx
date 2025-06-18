@@ -102,7 +102,7 @@ export default function ClientsList() {
             <tbody>
               {clients.map((client) => (
                 <tr key={client.id_int} className="border-t">
-                  <td className="px-4 py-2">{client.company}</td>
+                 <td className="px-4 py-2">{client.company && client.company.trim() !== '' ? client.company : 'Particulier'}</td>
                   <td className="px-4 py-2">{client.last_name}</td>
                   <td className="px-4 py-2">{client.first_name}</td>
                   <td className="px-4 py-2">{client.phone}</td>

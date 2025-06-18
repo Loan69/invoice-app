@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import ImageCarousel from '../components/ImageCarousel'
 
 export default function LandingPage() {
   const [loading, setLoading] = useState(false)
@@ -55,13 +56,28 @@ export default function LandingPage() {
       </header>
 
       <main className="min-h-screen flex flex-col items-center justify-center px-6 bg-white text-gray-900 pt-24">
-       
-        <p className="text-lg mb-8 text-center max-w-xl">
-          Générez vos factures automatiquement, suivez vos paiements, et restez conforme.
-        </p>
+
+      <ul className="text-lg mb-8 text-left max-w-xl mx-auto space-y-2">
+        <li className="flex items-start">
+          <span className="mr-2">✅</span>
+          <span>Générez vos factures automatiquement (PDF, TVA, mentions légales)</span>
+        </li>
+        <li className="flex items-start">
+          <span className="mr-2">✅</span>
+          <span>Suivez vos paiements</span>
+        </li>
+        <li className="flex items-start">
+          <span className="mr-2">✅</span>
+          <span>Restez conforme à la réglementation</span>
+        </li>
+        <li className="flex items-start">
+          <span className="mr-2">✅</span>
+          <span>Profitez d'une interface claire et d'une prise en main immédiate</span>
+        </li>
+      </ul>
 
         <h2 className="text-lg mb-2 text-center max-w-xl">
-          Entrer votre email et profitez de 3 jours d’essai gratuit
+          Entrer votre email et profitez de 3 jours d’essai gratuit (sans engagement)
         </h2>
 
         <input
@@ -81,7 +97,9 @@ export default function LandingPage() {
             className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer"
           >
             Commencer la démo
-          </button>
+        </button>
+
+        <ImageCarousel />
 
 
         {/* Offres */}
