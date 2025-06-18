@@ -72,7 +72,7 @@ export default function LandingPage() {
         </li>
         <li className="flex items-start">
           <span className="mr-2">✅</span>
-          <span>Profitez d'une interface claire et d&apos;une prise en main immédiate</span>
+          <span>Profitez d&apos;une interface claire et d&apos;une prise en main immédiate</span>
         </li>
       </ul>
 
