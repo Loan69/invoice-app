@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
+      automatic_tax: { enabled: true },
       customer_email: userEmail,
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/aboSuccess?success=true&email=${userEmail}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/landing?canceled=true`,
@@ -35,6 +37,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url: session.url })
   } catch (error: unknown) {
+    console.error("Stripe error", error);
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
