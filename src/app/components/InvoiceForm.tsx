@@ -84,18 +84,39 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   // Insertion des valeurs du formulaire dans la table invoices ou modification des données existantes
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Vérifie si un client est sélectionné
-  if (!form.client_id || form.client_id === "") {
-    alert("Vous devez choisir un client.");
-    return;
-  }
+  
+    if (!form.client_id || form.client_id === "") {
+      alert("Vous devez choisir un client.");
+      return;
+    }
+  
+    let newIdInt = 1; // valeur par défaut
+    if (mode !== "edit") {
+      // Aller chercher le plus grand id_int existant pour cet utilisateur
+      const { data: maxData, error: maxError } = await supabase
+        .from("invoices")
+        .select("id_int", { head: false })
+        .eq("user_id", user?.id)
+        .order("id_int", { ascending: false })
+        .limit(1);
+  
+      if (maxError) {
+        console.error("Erreur récupération numéro de facture :", maxError.message);
+        alert("Erreur lors de la récupération du numéro de facture.");
+        return;
+      }
+  
+      if (maxData && maxData.length > 0) {
+        newIdInt = maxData[0].id_int + 1;
+      }
+    }
   
     const payload = {
       ...form,
       client_id: parseInt(form.client_id),
       amount: parseFloat(form.amount),
       user_id: user?.id,
+      id_int: mode === "edit" && invoiceData?.id_int ? invoiceData.id_int : newIdInt,
     };
   
     let error;
@@ -103,7 +124,8 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       const { error: updateError } = await supabase
         .from("invoices")
         .update(payload)
-        .eq("id_int", invoiceData.id_int);
+        .eq("id_int", invoiceData.id_int)
+        .eq("user_id", user?.id);
       error = updateError;
     } else {
       const { error: insertError } = await supabase
@@ -114,9 +136,10 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   
     if (error) {
       console.error("Erreur lors de la sauvegarde :", error.message);
+      alert("Erreur lors de la sauvegarde : " + error.message);
       return;
     }
-
+  
     router.push("/dashboard");
   };
   
