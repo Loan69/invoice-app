@@ -114,7 +114,7 @@ export default function LandingPage() {
             selectedPlan === 'monthly' ? 'border-blue-600' : 'border-transparent'
           }`}>
             <h3 className="text-xl font-semibold mb-2">Mensuel</h3>
-            <p className="text-2xl font-bold mb-4">9,99€/mois</p>
+            <p className="text-2xl font-bold mb-4">9,50€/mois</p>
             <p className="text-gray-600">Sans engagement. Résiliable à tout moment.</p>
           </button>
 
@@ -125,7 +125,7 @@ export default function LandingPage() {
             selectedPlan === 'yearly' ? 'border-blue-600' : 'border-transparent'
             }`}>
             <h3 className="text-xl font-semibold mb-2">Annuel</h3>
-            <p className="text-2xl font-bold mb-4">99,90€/an</p>
+            <p className="text-2xl font-bold mb-4">95,00€/an</p>
             <p className="text-blue-600 font-medium">2 mois offerts</p>
             </button>
           </div>
