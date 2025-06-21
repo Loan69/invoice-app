@@ -65,7 +65,7 @@ export default function AbonnementExpirePage() {
                 ${selectedPlan === 'monthly' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
             >
                 <h3 className="text-lg font-semibold">Mensuel</h3>
-                <p className="text-2xl font-bold">9,99 € / mois</p>
+                <p className="text-2xl font-bold">9,50 € / mois</p>
                 <p className="text-sm text-gray-500">Sans engagement</p>
             </button>
 
@@ -75,7 +75,7 @@ export default function AbonnementExpirePage() {
                 ${selectedPlan === 'yearly' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
             >
                 <h3 className="text-lg font-semibold">Annuel</h3>
-                <p className="text-2xl font-bold">99,90 € / an</p>
+                <p className="text-2xl font-bold">95,00 € / an</p>
                 <p className="text-sm text-blue-600">2 mois offerts</p>
             </button>
             </div>

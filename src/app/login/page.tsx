@@ -53,7 +53,7 @@ export default function LoginPage() {
         const now = new Date();
         const diffInDays = (now.getTime() - demoStart.getTime()) / (1000 * 60 * 60 * 24);
 
-        if (diffInDays > 3) {
+        if (diffInDays > 15) {
           // Mettre à jour is_demo = false
           await supabase
             .from('profiles')

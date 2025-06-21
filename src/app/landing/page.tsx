@@ -77,7 +77,7 @@ export default function LandingPage() {
       </ul>
 
         <h2 className="text-lg mb-2 text-center max-w-xl">
-          Entrer votre email et profitez de 3 jours d’essai gratuit (sans engagement)
+          Entrer votre email et profitez de 15 jours d’essai gratuit (sans engagement)
         </h2>
 
         <input
