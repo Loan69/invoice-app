@@ -49,11 +49,9 @@ export default function LoginPage() {
     } else {
       //  Vérifier si la démo a expiré
       if (profile.is_demo && profile.demo_started_at) {
-        const demoStart = new Date(profile.demo_started_at);
         const now = new Date();
-        const diffInDays = (now.getTime() - demoStart.getTime()) / (1000 * 60 * 60 * 24);
 
-        if (diffInDays > 15) {
+        if (now > profile.demo_expires_at) {
           // Mettre à jour is_demo = false
           await supabase
             .from('profiles')

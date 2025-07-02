@@ -48,7 +48,7 @@ export default function CompleteProfilePage() {
     }
 
     const now = new Date();
-    const demoExpiresAt = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // Ajoute 3 jours
+    const demoExpiresAt = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000); // Ajoute 15 jours
 
     const profileData: Profile = {
       id: user.id,
