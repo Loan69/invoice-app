@@ -90,7 +90,7 @@ export default function DashboardPage() {
         .select(`*,
                 clients (company, last_name, first_name, address, email, is_professional)`)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(3);
 
       if (!error && data) {
         setInvoices(data);

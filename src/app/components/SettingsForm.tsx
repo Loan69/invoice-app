@@ -5,6 +5,8 @@ import { Profile, BankDetails } from "@/types/profile";
 import { useUser } from "@supabase/auth-helpers-react";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SupabaseClient } from '@supabase/supabase-js';
+
 
 type ProfileFormProps = {
     profileData: Partial<Profile>;
@@ -106,6 +108,52 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
     
       if (setIsDirty) setIsDirty(true);
     };
+
+    // Insertion ou modification du logo
+    const handleLogoUpload = async (
+      e: React.ChangeEvent<HTMLInputElement>,
+      userId: string,
+      supabase: SupabaseClient,
+      setProfileForm: (fn: (prev: any) => any) => void,
+      setIsDirty?: (dirty: boolean) => void
+    ) => {
+      const file = e.target.files?.[0];
+      if (!file || !userId) return;
+    
+      const fileName = `logo-${userId}.png`;
+    
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(fileName, file, {
+          upsert: true,
+          contentType: file.type,
+          cacheControl: 'public, max-age=0',
+        });
+    
+      if (uploadError) {
+        console.error('Erreur lors de l’upload :', uploadError.message);
+        return;
+      }
+    
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('logos').getPublicUrl(fileName);
+      
+      // Mise à jour du champ logo_url dans Supabase
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ logo_url: publicUrl })
+        .eq('id', userId);
+    
+      if (updateError) {
+        console.error('Erreur mise à jour logo_url :', updateError.message);
+        return;
+      }
+      // Mise à jour locale du state
+      setProfileForm((prev) => ({ ...prev, logo_url: publicUrl }));
+      if (setIsDirty) setIsDirty(true);
+    };
+    
     
 
     // Enregistrement des informations de l'utilisateur
@@ -246,53 +294,21 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
             />
 
             <div className="mt-4">
-              <label className="block mb-2 text-sm font-medium text-gray-700">Logo de votre entreprise</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">Logo de votre société</label>
               <input
-                type="file"
-                accept="image/*"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file || !user?.id) return;
-
-                  const fileExt = file.name.split('.').pop();
-                  const fileName = `logo-${user.email}-${user.id}.${fileExt}`;
-                  const filePath = `${fileName}`;
-
-                  const { error: uploadError } = await supabase.storage
-                    .from('logos')
-                    .upload(filePath, file, { upsert: true });
-
-                  if (uploadError) {
-                    console.error('Erreur lors de l’upload :', uploadError.message);
-                    return;
-                  }
-
-                  const {
-                    data: { publicUrl },
-                  } = supabase.storage.from('logos').getPublicUrl(filePath);
-
-                  // Mise à jour du champ logo_url dans Supabase
-                  const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ logo_url: publicUrl })
-                    .eq('id', user.id);
-
-                  if (updateError) {
-                    console.error('Erreur mise à jour logo_url :', updateError.message);
-                    return;
-                  }
-
-                  // Mise à jour locale du state
-                  setProfileForm((prev) => ({ ...prev, logo_url: publicUrl }));
-                  if (setIsDirty) setIsDirty(true);
-                }}
-                className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer"
-              />
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (user?.id) {
+                      handleLogoUpload(e, user.id, supabase, setProfileForm, setIsDirty);
+                    }
+                  }}
+                />
 
               {profileForm.logo_url && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-600 mb-1">Aperçu :</p>
-                  <img src={profileForm.logo_url} alt="Logo entreprise" className="h-20 object-contain border rounded" />
+                  <img src={`${profileForm.logo_url}?v=${Date.now()}`} alt="Logo entreprise" className="h-20 object-contain border rounded" />
                 </div>
               )}
             </div>

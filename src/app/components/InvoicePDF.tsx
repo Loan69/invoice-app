@@ -88,11 +88,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 20,
   },
-  footerContainer: {
-    marginTop: 20,
-    paddingTop: 10,
-    borderTop: '1px solid #ccc',
+  logoContainer: {
     alignItems: 'center',
+    marginBottom: 20,
   },
   logoBox: {
     marginTop: 10,
@@ -100,10 +98,26 @@ const styles = StyleSheet.create({
     border: '1px solid #ccc',
     borderRadius: 4,
   },
-  footerLogo: {
-    width: 100,
-    height: 50,
+  logo: {
+    width: 200,
+    height: 100,
     objectFit: 'contain',
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  footerText: {
+    fontSize: 10,
+    color: '#666',
+    width: '100%',
+    textAlign: 'center',
+    paddingHorizontal: 40,
+  },
+  container: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%',
   },
    
 });
@@ -148,82 +162,89 @@ export default function InvoicePDF({ invoice, profile }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Titre */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{invoice.is_credit_note ? 'AVOIR' : 'FACTURE'}</Text>
-        </View>
+        <View style={styles.container}>
 
-        {/* Informations facture */}
-        <View style={styles.invoiceInfoBox}>
-          <Text style={styles.invoiceInfoText}>
-            <Text style={styles.bold}>{invoice.is_credit_note
-              ? `Ce document annule la facture F-${invoice.original_invoice_id?.toString().padStart(4, '0')}`
-              : `Facture n° F-${invoice.id_int.toString().padStart(4, '0')}`}
+          {/* Logo de l'utilisateur */}
+          {profile.logo_url && (
+            <View style={styles.logoContainer}>
+                <Image
+                  src={`${profile.logo_url}?v=${Date.now()}`}
+                  style={styles.logo}
+                />
+            </View>
+            )}
+
+          {/* Informations facture */}
+          <View style={styles.invoiceInfoBox}>
+            <Text style={styles.invoiceInfoText}>
+              <Text style={styles.bold}>{invoice.is_credit_note
+                ? `Ce document annule la facture F-${invoice.original_invoice_id?.toString().padStart(4, '0')}`
+                : `Facture n° F-${invoice.id_int.toString().padStart(4, '0')}`}
+              </Text>
             </Text>
-          </Text>
-          <Text style={styles.invoiceInfoText}>
-            <Text style={styles.bold}>Date : {datefac.toLocaleDateString()}</Text>
-          </Text>
-          <Text style={styles.invoiceInfoText}>
-            <Text style={styles.bold}>Échéance : {dueDate.toLocaleDateString()}</Text>
-          </Text>
-        </View>
-
-        {/* Émetteur */}
-        <View style={styles.section}>
-          <Text style={styles.bold}>Société émettrice : {profile.company}</Text>
-          <Text>Adresse : {profile.address}</Text>
-          <Text>Siret : {profile.siret}</Text>
-          <Text>Email : {profile.email}</Text>
-          <Text>Téléphone : {profile.phone}</Text>
-        </View>
-
-        {/* Client */}
-        <View style={styles.section}>
-          <Text style={styles.bold}>Client :</Text>
-          <Text>{invoice.clients?.first_name} {invoice.clients?.last_name}</Text>
-          <Text>Société : {invoice.clients?.company}</Text>
-          <Text>Adresse : {invoice.clients?.address}</Text>
-          <Text>Email : {invoice.clients?.email}</Text>
-        </View>
-
-        {/* Détail des prestations */}
-        <View style={styles.section}>
-          <Text style={styles.bold}>Détails :</Text>
-          <View style={styles.tableHeader}>
-            <Text style={{ width: '70%' }}>Description</Text>
-            <Text style={{ width: '30%', textAlign: 'right' }}>Montant HT</Text>
+            <Text style={styles.invoiceInfoText}>
+              <Text style={styles.bold}>Date : {datefac.toLocaleDateString()}</Text>
+            </Text>
+            <Text style={styles.invoiceInfoText}>
+              <Text style={styles.bold}>Échéance : {dueDate.toLocaleDateString()}</Text>
+            </Text>
           </View>
-          <View style={styles.tableRow}>
-            <Text style={{ width: '70%' }}>{invoice.description}</Text>
-            <Text style={{ width: '30%', textAlign: 'right' }}>{totalHT.toFixed(2)} €</Text>
-          </View>
-        </View>
 
-        {/* Totaux */}
-        <View style={styles.section}>
-          <Text style={styles.bold}>Récapitulatif :</Text>
-          <View style={styles.row}>
-            <Text>Total HT :</Text>
-            <Text>{totalHT.toFixed(2)} €</Text>
+          {/* Émetteur */}
+          <View style={styles.section}>
+            <Text style={styles.bold}>Société émettrice : {profile.company}</Text>
+            {profile.address && (<Text>Adresse : {profile.address}</Text>)}
+            {profile.siret && (<Text>Siret : {profile.siret}</Text>)}
+            {profile.email && (<Text>Email : {profile.email}</Text>)}
+            {profile.phone && (<Text>Téléphone : {profile.phone}</Text>)}
           </View>
-          <View style={styles.row}>
-            <Text>TVA ({(tvaRate * 100).toFixed(1)}%) :</Text>
-            <Text>{montantTVA.toFixed(2)} €</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.bold}>Total TTC :</Text>
-            <Text style={styles.bold}>{totalTTC.toFixed(2)} €</Text>
-          </View>
-        </View>
 
-        {/* Mentions légales */}
-        <View style={styles.section}>
-          <Text style={styles.bold}>Conditions de règlement :</Text>
-          <Text>• Paiement à réception</Text>
-          <Text>• Pénalités de retard : 10% du montant TTC</Text>
-          <Text>• {tvaLabel}</Text>
-        </View>
+          {/* Client */}
+          <View style={styles.section}>
+            <Text style={styles.bold}>A l'attention de :</Text>
+            {invoice.clients?.last_name && (<Text>{invoice.clients?.first_name} {invoice.clients?.last_name}</Text>)}
+            {invoice.clients?.company && (<Text>Société : {invoice.clients?.company}</Text>)}
+            {invoice.clients?.address && (<Text>Adresse : {invoice.clients?.address}</Text>)}
+            {invoice.clients?.email && (<Text>Email : {invoice.clients?.email}</Text>)}
+          </View>
+
+          {/* Statut de la facture */}
+          {invoice.status && (<View style={styles.section}>
+            <Text style={styles.statusText}>
+              Statut de la facture : {invoice.status}
+            </Text>
+          </View>)}
+
+
+          {/* Détail des prestations */}
+          <View style={styles.section}>
+            <Text style={styles.bold}>Détails :</Text>
+            <View style={styles.tableHeader}>
+              <Text style={{ width: '70%' }}>Description</Text>
+              <Text style={{ width: '30%', textAlign: 'right' }}>Montant HT</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={{ width: '70%' }}>{invoice.description}</Text>
+              <Text style={{ width: '30%', textAlign: 'right' }}>{totalHT.toFixed(2)} €</Text>
+            </View>
+          </View>
+
+          {/* Totaux */}
+          <View style={styles.section}>
+            <Text style={styles.bold}>Récapitulatif :</Text>
+            <View style={styles.row}>
+              <Text>Total HT :</Text>
+              <Text>{totalHT.toFixed(2)} €</Text>
+            </View>
+            <View style={styles.row}>
+              <Text>TVA ({(tvaRate * 100).toFixed(1)}%) :</Text>
+              <Text>{montantTVA.toFixed(2)} €</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.bold}>Total TTC :</Text>
+              <Text style={styles.bold}>{totalTTC.toFixed(2)} €</Text>
+            </View>
+          </View>
 
           {/* Coordonnées bancaires */}
           {invoice.clients?.is_professional === true && (
@@ -235,17 +256,13 @@ export default function InvoicePDF({ invoice, profile }: Props) {
             </View>
           )}
 
-          {/* Logo de l'utilisateur */}
-          {profile.logo_url && (
-          <View style={styles.footerContainer}>
-            <View style={styles.logoBox}>
-              <Image
-                src={profile.logo_url}
-                style={styles.footerLogo}
-              />
-            </View>
+            {/* Mentions légales */}
+          <View>
+            <Text style={styles.footerText}>
+              Paiement à réception - Pénalités de retard : 10% du montant TTC - {tvaLabel}
+            </Text>
           </View>
-          )}
+        </View>
 
       </Page>
     </Document>

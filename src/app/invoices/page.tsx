@@ -26,7 +26,7 @@ export default function FacturesList() {
       if (!user) return;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name, company, address, email, phone")
+        .select("id, first_name, company, address, email, phone, logo_url")
         .eq("id", user?.id)
         .maybeSingle();
       if (!error && data) {
@@ -147,7 +147,7 @@ export default function FacturesList() {
                   <td className="px-4 py-2">{invoice.status}</td>
                   <td className="px-4 py-2 text-center">
                     <Link href={`/invoices/${invoice.id_int}/edit`}>
-                      <Button variant="outline">Éditer</Button>
+                      <Button variant="outline" className="cursor-pointer">Éditer</Button>
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-center">
@@ -160,7 +160,7 @@ export default function FacturesList() {
                           loading ? (
                             <span className="text-xs text-gray-400">Chargement…</span>
                           ) : (
-                            <Button variant="ghost" className="text-xs px-2 py-1">Télécharger</Button>
+                            <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
                           )
                         }
                       </PDFDownloadLink>
