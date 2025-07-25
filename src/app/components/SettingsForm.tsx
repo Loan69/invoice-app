@@ -25,7 +25,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
     const supabase = createClientComponentClient();
     const user = useUser();
     const [loading, setLoading] = useState(false);
-    const [profileForm, setProfileForm] = useState({
+    const [profileForm, setProfileForm] = useState<Partial <Profile>>({
         first_name: '',
         last_name: '',
         address: '',
@@ -114,7 +114,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
       e: React.ChangeEvent<HTMLInputElement>,
       userId: string,
       supabase: SupabaseClient,
-      setProfileForm: (fn: (prev: any) => any) => void,
+      setProfileForm: (fn: (prev: Partial<Profile>) => Partial<Profile>) => void,
       setIsDirty?: (dirty: boolean) => void
     ) => {
       const file = e.target.files?.[0];
@@ -243,7 +243,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
                 type="text"
                 name="bank_details.iban"
                 placeholder="IBAN"
-                value={profileForm.bank_details.iban}
+                value={profileForm.bank_details?.iban}
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -251,7 +251,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
                 type="text"
                 name="bank_details.bic"
                 placeholder="BIC"
-                value={profileForm.bank_details.bic}
+                value={profileForm.bank_details?.bic}
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -259,7 +259,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
                 type="text"
                 name="bank_details.bank_name"
                 placeholder="Nom de la banque"
-                value={profileForm.bank_details.bank_name}
+                value={profileForm.bank_details?.bank_name}
                 onChange={handleChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
