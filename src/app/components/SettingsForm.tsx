@@ -39,6 +39,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
           bank_name: '',
         },
         abo_plan: '',
+        logo_url:'',
       });
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -61,6 +62,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               bank_name: profileData.bank_details?.bank_name || '',
             },
             abo_plan: profileData.abo_plan || '',
+            logo_url: profileData.logo_url || '',
           });
         }
       }, [profileData]);
@@ -242,6 +244,59 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+
+            <div className="mt-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700">Logo de votre entreprise</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !user?.id) return;
+
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `logo-${user.email}-${user.id}.${fileExt}`;
+                  const filePath = `${fileName}`;
+
+                  const { error: uploadError } = await supabase.storage
+                    .from('logos')
+                    .upload(filePath, file, { upsert: true });
+
+                  if (uploadError) {
+                    console.error('Erreur lors de l’upload :', uploadError.message);
+                    return;
+                  }
+
+                  const {
+                    data: { publicUrl },
+                  } = supabase.storage.from('logos').getPublicUrl(filePath);
+
+                  // Mise à jour du champ logo_url dans Supabase
+                  const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ logo_url: publicUrl })
+                    .eq('id', user.id);
+
+                  if (updateError) {
+                    console.error('Erreur mise à jour logo_url :', updateError.message);
+                    return;
+                  }
+
+                  // Mise à jour locale du state
+                  setProfileForm((prev) => ({ ...prev, logo_url: publicUrl }));
+                  if (setIsDirty) setIsDirty(true);
+                }}
+                className="block w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer"
+              />
+
+              {profileForm.logo_url && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-1">Aperçu :</p>
+                  <img src={profileForm.logo_url} alt="Logo entreprise" className="h-20 object-contain border rounded" />
+                </div>
+              )}
+            </div>
+
 
             <label className="flex items-center gap-2 mb-4">
                 <input

@@ -3,7 +3,8 @@ import {
   Page,
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  Image
 } from '@react-pdf/renderer';
 import { Profile } from '@/types/profile';
 import { InvoiceWithClient } from '@/types/invoiceWithClient';
@@ -77,8 +78,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
     lineHeight: 1.5,
   },
-
-  
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  companyInfo: {
+    flex: 1,
+    marginRight: 20,
+  },
+  footerContainer: {
+    marginTop: 20,
+    paddingTop: 10,
+    borderTop: '1px solid #ccc',
+    alignItems: 'center',
+  },
+  logoBox: {
+    marginTop: 10,
+    padding: 10,
+    border: '1px solid #ccc',
+    borderRadius: 4,
+  },
+  footerLogo: {
+    width: 100,
+    height: 50,
+    objectFit: 'contain',
+  },
+   
 });
 
 export default function InvoicePDF({ invoice, profile }: Props) {
@@ -206,6 +233,18 @@ export default function InvoicePDF({ invoice, profile }: Props) {
               <Text style={styles.ribText}>BIC : {profile.bank_details?.bic}</Text>
               <Text style={styles.ribText}>Banque : {profile.bank_details?.bank_name}</Text>
             </View>
+          )}
+
+          {/* Logo de l'utilisateur */}
+          {profile.logo_url && (
+          <View style={styles.footerContainer}>
+            <View style={styles.logoBox}>
+              <Image
+                src={profile.logo_url}
+                style={styles.footerLogo}
+              />
+            </View>
+          </View>
           )}
 
       </Page>

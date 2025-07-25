@@ -26,4 +26,5 @@ export interface Profile {
   demo_expires_at?: string | null;
   subscription_started_at?: string | null;
   abo_plan? : string | null;
+  logo_url? : string | null;
 }
