@@ -17,6 +17,8 @@ import { Profile } from '@/types/profile'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SubscriptionBadge from '../components/SubscriptionBadge';
+import { GraphInvoice } from '@/types/graphinvoice';
+
 
 export default function DashboardPage() {
   const supabase = createClientComponentClient()
@@ -30,6 +32,8 @@ export default function DashboardPage() {
 
   const [totalRevenue, setTotalRevenue] = useState(0)
   const [pendinginvoices, setPendingInvoices] = useState(0)
+
+  const [graphData, setGraphData] = useState<GraphInvoice[]>([]);
 
 
   // Récupération des données de l'utilisateur
@@ -84,59 +88,70 @@ export default function DashboardPage() {
 
   // Récupération des dernières factures à afficher
   useEffect(() => {
-    const fetchInvoices = async () => {
-      const { data, error } = await supabase
+    const fetchData = async () => {
+      const today = new Date();
+      const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), 1); // 1er du mois précédent, il y a 12 mois
+  
+      // 1. Dernières 5 factures
+      const { data: recentInvoices, error: errorRecent } = await supabase
         .from("invoices")
-        .select(`*,
-                clients (company, last_name, first_name, address, email, is_professional)`)
+        .select(`*, clients (company, last_name, first_name, address, email, is_professional)`)
         .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (!error && data) {
-        setInvoices(data);
-        const totalPaid = data
-        .filter((inv) => inv.status === "Payée")
-        .reduce((acc, curr) => acc + curr.amount, 0);
-        const pendingCount = data.filter((inv) => inv.status === "À régler").length;
+        .limit(5);
+  
+      if (!errorRecent && recentInvoices) {
+        setInvoices(recentInvoices);
+      }
+  
+      // 2. Factures des 12 derniers mois
+      const { data: last12MonthsInvoices, error: errorLast12 } = await supabase
+        .from("invoices")
+        .select("datefac, amount, status")
+        .gte("datefac", lastYear.toISOString());
+  
+      if (!errorLast12 && last12MonthsInvoices) {
+        setGraphData(last12MonthsInvoices); // tu crées un state spécifique
+        const totalPaid = last12MonthsInvoices
+          .filter((inv) => inv.status === "Payée")
+          .reduce((acc, curr) => acc + curr.amount, 0);
+        const pendingCount = last12MonthsInvoices.filter((inv) => inv.status === "À régler").length;
         setTotalRevenue(totalPaid);
         setPendingInvoices(pendingCount);
       } else {
-        console.error("Erreur lors de la récupération des factures :", error);
+        console.error("Erreur lors de la récupération des factures sur 12 mois :", errorLast12);
       }
     };
-
-    fetchInvoices();
+  
+    fetchData();
   }, []);
+  
 
   // Requête pour le graphique
   const monthlyData = useMemo(() => {
+    const today = new Date();
     const map = new Map<string, { label: string; total: number }>();
   
-    invoices.forEach((inv) => {
-      if (inv.status?.toLowerCase() !== "payée") return;
+    // Initialiser les 12 mois à 0
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const key = `${date.getFullYear()}-${date.getMonth()}`;
+      const label = date.toLocaleString("fr-FR", { month: "short", year: "numeric" });
+      map.set(key, { label, total: 0 });
+    }
   
+    // Ajouter les montants
+    graphData.forEach((inv) => {
+      if (inv?.status?.toLowerCase() !== "payée") return;
       const date = new Date(inv.datefac);
-      const month = date.getMonth(); // 0 = janvier
-      const year = date.getFullYear();
-      const key = `${year}-${month}`; // clé stable pour le tri
-  
-      const label = date.toLocaleString("fr-FR", { month: "short", year: "numeric" }); // "mai 2025"
-  
-      if (!map.has(key)) {
-        map.set(key, { label, total: inv.amount });
-      } else {
+      const key = `${date.getFullYear()}-${date.getMonth()}`;
+      if (map.has(key)) {
         map.get(key)!.total += inv.amount;
       }
     });
   
-    return Array.from(map.entries())
-      .sort(([a], [b]) => {
-        const [yearA, monthA] = a.split("-").map(Number);
-        const [yearB, monthB] = b.split("-").map(Number);
-        return yearA !== yearB ? yearA - yearB : monthA - monthB;
-      })
-      .map(([, { label, total }]) => ({ name: label, total }));
-  }, [invoices]);
+    return Array.from(map.values());
+  }, [graphData]);
+  
 
   if (profileLoading) {
     return <LoadingSpinner />;

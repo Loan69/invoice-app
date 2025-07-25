@@ -14,7 +14,7 @@ export default function MentionsLegales() {
             <p className="mb-4">
                 Nom : Dervillers Loan<br />
                 Adresse : Lyon<br />
-                Email : supportAlfredFacture@gmail.com<br />
+                Email : alfredfacture@gmail.com<br />
                 {/* N° SIRET : [Numéro si société]<br /> */}
             </p>
 
