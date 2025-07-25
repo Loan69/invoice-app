@@ -17,7 +17,7 @@ import { Profile } from '@/types/profile'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SubscriptionBadge from '../components/SubscriptionBadge';
-import { GraphInvoice } from '@/types/graphinvoice';
+import { GraphInvoice } from '@/types/graphInvoice';
 
 
 export default function DashboardPage() {
