@@ -238,49 +238,56 @@ export default function DashboardPage() {
                     Factures récentes
                   </span>
                   <Link href="/invoices">
-                    <Button variant="outline" className='cursor-pointer'>Voir toutes les factures</Button>
+                    <Button variant="outline" className="cursor-pointer">Voir toutes les factures</Button>
                   </Link>
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
-                {invoices.length === 0 ? (
-          <p className="text-sm text-gray-400">Aucune facture disponible.</p>
-          ) : (
-          <div className="space-y-2">
-            {invoices.map((invoice) => (
-              <div
-                key={invoice.id_int}
-                className="flex justify-between items-center text-sm text-gray-700 border-b pb-1"
-              >
-                <span>
-                  #{invoice.id_int.toString().padStart(4, "0")} – {invoice.amount}€ – {invoice.status} - {invoice.clients?.company}
-                </span>
-                <Link href={`invoices/${invoice.id_int}/edit`}>
-                  <Button className='cursor-pointer'>Éditer</Button>
-                </Link>
-                {profile && (
-                  <PDFDownloadLink
-                    document={ <InvoicePDF invoice={invoice} profile={profile} />}
-                    fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
-                  >
-                    {({ loading }) =>
-                      loading ? (
-                        <span className="text-xs text-gray-400">Chargement…</span>
-                      ) : (
-                        <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
-                          Télécharger
-                        </Button>
-                      )
-                    }
-                  </PDFDownloadLink>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+              {invoices.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucune facture disponible.</p>
+              ) : (
+                <div className="space-y-2">
+                  {invoices.map((invoice) => (
+                    <div
+                      key={invoice.id_int}
+                      className="flex justify-between items-center text-sm text-gray-700 border-b pb-1"
+                    >
+                      {/* Infos facture */}
+                      <span>
+                        #{invoice.id_int.toString().padStart(4, "0")} – {invoice.amount}€ – {invoice.status} - {invoice.clients?.company}
+                      </span>
+
+                      {/* Groupe des boutons alignés */}
+                      <div className="flex items-center gap-2">
+                        <Link href={`invoices/${invoice.id_int}/edit`}>
+                          <Button size="sm" className="cursor-pointer">Éditer</Button>
+                        </Link>
+
+                        {profile && (
+                          <PDFDownloadLink
+                            document={<InvoicePDF invoice={invoice} profile={profile} />}
+                            fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
+                          >
+                            {({ loading }) =>
+                              loading ? (
+                                <span className="text-xs text-gray-400">Chargement…</span>
+                              ) : (
+                                <Button size="sm" variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
+                                  Télécharger
+                                </Button>
+                              )
+                            }
+                          </PDFDownloadLink>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
+
         </div>
 
         {/* Graphique / Indicateurs */}
@@ -296,7 +303,7 @@ export default function DashboardPage() {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="label" />
                 <YAxis allowDecimals={false} />
                 <Tooltip
                   formatter={(value) => `${value} €`}
