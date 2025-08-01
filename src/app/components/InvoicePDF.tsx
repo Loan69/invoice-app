@@ -9,7 +9,6 @@ import {
 import { Profile } from '@/types/profile';
 import { InvoiceWithClient } from '@/types/invoiceWithClient';
 import { getTotalAmount } from "@/lib/utils";
-import { Item } from '@radix-ui/react-select';
 import { Items } from '@/types/items';
 
 type Props = {
