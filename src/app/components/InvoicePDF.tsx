@@ -8,6 +8,9 @@ import {
 } from '@react-pdf/renderer';
 import { Profile } from '@/types/profile';
 import { InvoiceWithClient } from '@/types/invoiceWithClient';
+import { getTotalAmount } from "@/lib/utils";
+import { Item } from '@radix-ui/react-select';
+import { Items } from '@/types/items';
 
 type Props = {
   invoice: InvoiceWithClient;
@@ -47,18 +50,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  tableHeader: {
+  tableHeaderText: {
     fontWeight: 'bold',
-    marginTop: 10,
     borderBottom: '1px solid #000',
-    paddingBottom: 5,
+    paddingBottom: 4,
   },
+  
   tableRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center', // clé pour l’alignement vertical
     paddingVertical: 4,
     borderBottom: '0.5px solid #ccc',
   },
+  
+  tableCellDescription: {
+    width: '70%',
+    fontSize: 10,
+  },
+  
+  tableCellAmount: {
+    width: '30%',
+    fontSize: 10,
+    textAlign: 'right',
+  },
+  
   bold: {
     fontWeight: 'bold',
   },
@@ -127,7 +143,7 @@ export default function InvoicePDF({ invoice, profile }: Props) {
   const dueDate = new Date(datefac);
   dueDate.setDate(dueDate.getDate() + 30);
 
-  const totalHT = invoice.amount ?? 0;
+  const totalHT = getTotalAmount(invoice.items ?? 0);
 
   // TVA selon le tax_status
   let tvaRate = 0;
@@ -219,15 +235,26 @@ export default function InvoicePDF({ invoice, profile }: Props) {
           {/* Détail des prestations */}
           <View style={styles.section}>
             <Text style={styles.bold}>Détails :</Text>
-            <View style={styles.tableHeader}>
-              <Text style={{ width: '70%' }}>Description</Text>
-              <Text style={{ width: '30%', textAlign: 'right' }}>Montant HT</Text>
-            </View>
+
+            {/* En-tête du tableau */}
             <View style={styles.tableRow}>
-              <Text style={{ width: '70%' }}>{invoice.description}</Text>
-              <Text style={{ width: '30%', textAlign: 'right' }}>{totalHT.toFixed(2)} €</Text>
+              <Text style={[styles.tableCellDescription, styles.tableHeaderText]}>
+                Description
+              </Text>
+              <Text style={[styles.tableCellAmount, styles.tableHeaderText]}>
+                Montant HT
+              </Text>
             </View>
+
+            {/* Lignes de prestations */}
+            {invoice.items.map((item: Items, index: number) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={styles.tableCellDescription}>{item.description}</Text>
+                <Text style={styles.tableCellAmount}>{item.amount} €</Text>
+              </View>
+            ))}
           </View>
+
 
           {/* Totaux */}
           <View style={styles.section}>

@@ -120,7 +120,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
       const file = e.target.files?.[0];
       if (!file || !userId) return;
     
-      const fileName = `logo-${userId}.png`;
+      const fileName = `logo-${userId}`;
     
       const { error: uploadError } = await supabase.storage
         .from('logos')
@@ -293,25 +293,68 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
-            <div className="mt-4">
-              <label className="block mb-2 text-sm font-medium text-gray-700">Logo de votre société</label>
+            <div className="mt-6">
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Logo de votre société
+              </label>
+
+              <div className="flex items-center gap-4">
+                <label
+                  htmlFor="logo-upload"
+                  className="inline-block px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition"
+                >
+                  Choisir un fichier
+                </label>
+                <span className="text-sm text-gray-500">
+                  {profileForm.logo_url ? "Logo sélectionné" : "Aucun fichier sélectionné"}
+                </span>
+              </div>
+
               <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (user?.id) {
-                      handleLogoUpload(e, user.id, supabase, setProfileForm, setIsDirty);
-                    }
-                  }}
-                />
+                id="logo-upload"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (user?.id) {
+                    handleLogoUpload(e, user.id, supabase, setProfileForm, setIsDirty);
+                  }
+                }}
+                className="hidden"
+              />
 
               {profileForm.logo_url && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600 mb-1">Aperçu :</p>
-                  <img src={`${profileForm.logo_url}?v=${Date.now()}`} alt="Logo entreprise" className="h-20 object-contain border rounded" />
-                </div>
-              )}
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600 mb-1">Aperçu du logo :</p>
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={`${profileForm.logo_url}?v=${Date.now()}`}
+                        alt="Logo entreprise"
+                        className="h-20 max-w-xs object-contain border border-gray-200 rounded-lg p-2 bg-white shadow-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const { error } = await supabase.storage
+                            .from("logos")
+                            .remove([`logo-${user?.id}`]);
+
+                          if (!error) {
+                            // Met à jour l’état local
+                            setProfileForm((prev) => ({ ...prev, logo_url: null }));
+                          } else {
+                            console.error("Erreur lors de la suppression du logo :", error);
+                            alert("Erreur lors de la suppression du logo.");
+                          }
+                        }}
+                        className="cursor-pointer px-3 py-1.5 text-sm bg-red-100 text-red-600 border border-red-200 rounded hover:bg-red-200 transition"
+                      >
+                        Supprimer le logo
+                      </button>
+                    </div>
+                  </div>
+                )}
             </div>
+
 
 
             <label className="flex items-center gap-2 mb-4">

@@ -18,6 +18,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SubscriptionBadge from '../components/SubscriptionBadge';
 import { GraphInvoice } from '@/types/graphInvoice';
+import { getTotalAmount } from "@/lib/utils";
 
 
 export default function DashboardPage() {
@@ -106,14 +107,14 @@ export default function DashboardPage() {
       // 2. Factures des 12 derniers mois
       const { data: last12MonthsInvoices, error: errorLast12 } = await supabase
         .from("invoices")
-        .select("datefac, amount, status")
+        .select("datefac, items, status")
         .gte("datefac", lastYear.toISOString());
   
       if (!errorLast12 && last12MonthsInvoices) {
         setGraphData(last12MonthsInvoices); // tu crées un state spécifique
         const totalPaid = last12MonthsInvoices
           .filter((inv) => inv.status === "Payée")
-          .reduce((acc, curr) => acc + curr.amount, 0);
+          .reduce((acc, curr) => acc + getTotalAmount(curr.items), 0);
         const pendingCount = last12MonthsInvoices.filter((inv) => inv.status === "À régler").length;
         setTotalRevenue(totalPaid);
         setPendingInvoices(pendingCount);
@@ -145,7 +146,7 @@ export default function DashboardPage() {
       const date = new Date(inv.datefac);
       const key = `${date.getFullYear()}-${date.getMonth()}`;
       if (map.has(key)) {
-        map.get(key)!.total += inv.amount;
+        map.get(key)!.total += getTotalAmount(inv.items);
       }
     });
   
@@ -255,7 +256,12 @@ export default function DashboardPage() {
                     >
                       {/* Infos facture */}
                       <span>
-                        #{invoice.id_int.toString().padStart(4, "0")} – {invoice.amount}€ – {invoice.status} - {invoice.clients?.company}
+                        #{invoice.id_int.toString().padStart(4, "0")} –{" "}
+                        {getTotalAmount(invoice.items).toFixed(2).replace(".", ",")}€ – {invoice.status} –
+                        {invoice.clients?.is_professional == true
+                          ? ` ${ invoice.clients?.company}`
+                          : ` ${invoice.clients?.first_name} ${invoice.clients?.last_name}`}
+
                       </span>
 
                       {/* Groupe des boutons alignés */}

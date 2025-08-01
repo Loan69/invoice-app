@@ -1,8 +1,9 @@
+import { Items } from "./items";
+
 export interface Invoice {
     id_int: number;
     datefac: string;
-    description: string;
-    amount: number;
+    items: Items[];
     status: string;
     created_at?: string;
     updated_at?: string;

@@ -15,18 +15,13 @@ import { Client } from "@/types/client";
 import { Template } from "@/types/template";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUser } from "@supabase/auth-helpers-react";
+import { Invoice } from "@/types/invoice";
+import { Items } from "@/types/items";
 
 type InvoiceFormProps = {
   setIsDirty?: (v: boolean) => void;
   mode?: "create" | "edit";
-  invoiceData?: {
-    id_int: number;
-    client_id: number;
-    datefac: string;
-    description: string;
-    amount: number;
-    status: string;
-  };
+  invoiceData?: Partial<Invoice>;
   invoiceId?: string;
 };
 
@@ -38,8 +33,12 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   const [form, setForm] = useState({
     client_id: invoiceData?.client_id?.toString() || "",
     datefac: invoiceData?.datefac || new Date().toISOString().split("T")[0],
-    description: invoiceData?.description || "",
-    amount: invoiceData?.amount?.toString() || "",
+    items: Array.isArray(invoiceData?.items)
+    ? invoiceData?.items.map(item => ({
+        description: item.description || "",
+        amount: item.amount || ""
+      }))
+    : [{ description: "", amount: "" }],
     status: invoiceData?.status || "À régler",
   });
   const [templates, setTemplates] = useState<Template[] | []>([]);
@@ -61,7 +60,6 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
 
       if (error) console.error("Erreur de chargement des clients :", error);
       else setClients(data);
-      console.log(clients);
     };
     fetchClients();
   }, [user]);
@@ -78,8 +76,9 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       }
     };
     fetchTemplates();
-  }, []);
+  }, [user]);
 
+  console.log(user?.id)
 
   // Insertion des valeurs du formulaire dans la table invoices ou modification des données existantes
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,7 +113,6 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     const payload = {
       ...form,
       client_id: parseInt(form.client_id),
-      amount: parseFloat(form.amount),
       user_id: user?.id,
       id_int: mode === "edit" && invoiceData?.id_int ? invoiceData.id_int : newIdInt,
     };
@@ -143,12 +141,21 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     router.push("/dashboard");
   };
   
-
+  // Gestion de la modification d'un champ
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
     if (setIsDirty) setIsDirty(true);
   };
+
+  // gestion de la modification de description et montant
+  const handleItemChange = (index: number, field: "description" | "amount", value: string) => {
+    const updatedItems = [...(form.items ?? [])];
+    updatedItems[index][field] = value;
+    setForm({ ...form, items: updatedItems });
+    if (setIsDirty) setIsDirty(true);
+  };
+  
 
   // Gestion de la suppression d'un template
   const handleDeleteTemplate = async (id: number) => {
@@ -166,7 +173,16 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       else setTemplates(data || []);
     }
   };
+
+  // Mise en forme du montant hors taxe
+  const formatAmount = (value: string): string => {
+    const num = parseFloat(value.replace(',', '.'));
+    if (isNaN(num)) return "";
+    return num.toFixed(2).replace('.', ',');
+  };
   
+  console.log(form.items)
+
 
   return (
     <div className="p-1 items-start w-full">
@@ -200,8 +216,12 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
                       setSelectedTemplate(template.id_int);
                       setForm({
                         ...form,
-                        description: template.description || "",
-                        amount: template.amount?.toString() || "",
+                        items: Array.isArray(template.items)
+                          ? template.items.map((item) => ({
+                              description: item.description ?? "",
+                              amount: item.amount ?? ""
+                            }))
+                          : [{ description: "", amount: "" }],
                         status: template.status || "",
                       });
                       setOpen(false);
@@ -271,26 +291,68 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
           />
         </div>
 
-        <div>
-        <Label>Description</Label>
-        <Textarea 
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-      </div>
+        {form.items?.map((item: Items, index: number) => (
+          <div key={index}>
+            {/* Titre + bouton supprimer */}
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-md font-semibold text-gray-800">
+                Prestation n°{index + 1}
+              </h4>
+              <button
+                type="button"
+                onClick={() => {
+                  const updatedItems = form.items?.filter((_, i) => i !== index);
+                  setForm({ ...form, items: updatedItems });
+                  if (setIsDirty) setIsDirty(true);
+                }}
+                className="text-red-500 hover:text-red-700 text-sm cursor-pointer"
+                title="Supprimer cette prestation"
+              >
+                🗑 Supprimer
+              </button>
+            </div>
+            
+            <Label>Description</Label>
+            <Textarea
+              name="description"
+              value={item.description}
+              onChange={(e) => handleItemChange(index, "description", e.target.value)}
+            />
 
-        <div>
-          <Label>Montant Hors Taxe (€)</Label>
-          <Input
-            type="number"
-            name="amount"
-            value={form.amount}
-            onChange={handleChange}
-            required
-          />
-        </div>
+            <div className="relative mt-3 mb-3">
+            <Label>Montant hors taxe</Label>
+              <Input
+                name="amount"
+                value={item.amount}
+                onChange={(e) => handleItemChange(index, "amount", e.target.value)}
+                onBlur={(e) =>
+                  handleItemChange(index, "amount", formatAmount(e.target.value))
+                }
+                className="pr-10" // espace à droite pour le symbole
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                €
+              </span>
+            </div>
+
+          </div>
+        ))}
+
+        {/* Bouton pour ajouter une prestation */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setForm((prev) => ({
+              ...prev,
+              items: [...prev.items ?? [], { description: "", amount: "" }],
+            }));
+            if (setIsDirty) setIsDirty(true);
+          }}
+          className="cursor-pointer"
+        >
+          + Ajouter une prestation
+        </Button>
 
         <div>
           <Label>Statut</Label>
@@ -332,42 +394,53 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
         </Button>
 
         {showTemplateName && (
-          <div className="space-y-2 pt-2">
-            <Label>Nom du modèle</Label>
-            <Input
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="Ex : Facture standard client B2B"
-            />
-            <Button
-              type="button"
-              className="w-full mt-2 cursor-pointer"
-              onClick={async () => {
-                if (!templateName || !form.description || !form.amount) {
-                  alert("Nom, description et montant sont requis pour enregistrer un template.");
-                  return;
-                }
-                const { error } = await supabase.from("invoice_templates").insert([{
-                  name: templateName,
-                  description: form.description,
-                  amount: parseFloat(form.amount),
-                  status: form.status,
-                  user_id: user?.id
-                }]);
-                if (error) {
-                  console.log("Supabase insert error:", error);
-                  alert("Erreur lors de l'enregistrement : " + error.message);
-                } else {
-                  alert("Modèle enregistré !");
-                  setTemplateName("");
-                  setShowTemplateName(false);
-                }
-              }}
-            >
-              Sauvegarder
-            </Button>
-          </div>
-        )}
+  <div className="space-y-2 pt-2">
+    <Label>Nom du modèle</Label>
+    <Input
+      value={templateName}
+      onChange={(e) => setTemplateName(e.target.value)}
+      placeholder="Ex : Facture standard client B2B"
+    />
+    <Button
+      type="button"
+      className="w-full mt-2 cursor-pointer"
+      onClick={async () => {
+        if (!templateName) {
+          alert("Le nom du modèle est requis.");
+          return;
+        }
+
+        const hasEmptyFields = form.items?.some(
+          (item) => !item.description || !item.amount
+        );
+
+        if (hasEmptyFields) {
+          alert("Toutes les prestations doivent avoir une description et un montant.");
+          return;
+        }
+
+        const { error } = await supabase.from("invoice_templates").insert([{
+          name: templateName,
+          items: form.items,
+          status: form.status,
+          user_id: user?.id
+        }]);
+
+        if (error) {
+          console.log("Supabase insert error:", error);
+          alert("Erreur lors de l'enregistrement : " + error.message);
+        } else {
+          alert("Modèle enregistré !");
+          setTemplateName("");
+          setShowTemplateName(false);
+        }
+      }}
+    >
+      Sauvegarder
+    </Button>
+  </div>
+)}
+
 
       </form>
     </div>

@@ -1,8 +1,9 @@
+import { Items } from "./items";
+
 export interface Template {
     id_int: number;
     name: string;
-    amount: number;
-    description: string;
+    items: Items;
     status: string;
     created_at?: string;
     updated_at?: string;
