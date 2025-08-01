@@ -12,6 +12,7 @@ import { InvoiceWithClient } from "@/types/invoiceWithClient";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUser } from "@supabase/auth-helpers-react";
 import { Profile } from "@/types/profile";
+import { getTotalAmount } from "@/lib/utils";
 
 
 export default function FacturesList() {
@@ -143,7 +144,7 @@ export default function FacturesList() {
                   <td className="px-4 py-2">{invoice.clients?.is_professional}
                     {invoice.clients?.is_professional ? invoice.clients?.company : `${invoice.clients?.last_name ?? ''} ${invoice.clients?.first_name ?? ''}`}
                   </td>
-                  <td className="px-4 py-2">{invoice.amount} €</td>
+                  <td className="px-4 py-2">{getTotalAmount(invoice.items)} €</td>
                   <td className="px-4 py-2">{invoice.status}</td>
                   <td className="px-4 py-2 text-center">
                     <Link href={`/invoices/${invoice.id_int}/edit`}>
