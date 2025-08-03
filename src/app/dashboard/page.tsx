@@ -357,51 +357,91 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {invoices.length === 0 ? (
-                <p className="text-sm text-gray-400">Aucune facture disponible.</p>
+            {invoices.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucune facture récente.</p>
               ) : (
-                <div className="space-y-2">
-                  {invoices.map((invoice) => (
-                    <div
-                      key={invoice.id_int}
-                      className="flex justify-between items-center text-sm text-gray-700 border-b pb-1"
-                    >
-                      {/* Infos facture */}
-                      <span>
-                        #{invoice.id_int.toString().padStart(4, "0")} –{" "}
-                        {getTotalAmount(invoice.items).toFixed(2).replace(".", ",")}€ – {invoice.status} –
-                        {invoice.clients?.is_professional == true
-                          ? ` ${ invoice.clients?.company}`
-                          : ` ${invoice.clients?.first_name} ${invoice.clients?.last_name}`}
+                <ul className="text-sm text-gray-600 space-y-2">
+                  {invoices.map((invoice) => {
+                    const total = getTotalAmount(invoice.items).toFixed(2).replace(".", ",");
+                    
+                    // Icone des statuts du devis
+                    function getStatusIcon(status: string) {
+                      const baseClass = "ml-2 w-4 h-4 inline";
+                      switch (status.toLowerCase()) {
+                        case "payée":
+                          return <CheckCircle className={`${baseClass} text-green-500`} />;
+                        case "en retard":
+                          return <XCircle className={`${baseClass} text-red-500`} />;
+                        case "à régler":
+                          return <Clock className={`${baseClass} text-yellow-500`} />;
+                        default:
+                          return null;
+                      }
+                    }
 
-                      </span>
+                    const icon = getStatusIcon(invoice.status);
+                    
+                    const statusCycle = ["À régler", "Payée", "En retard"];
 
-                      {/* Groupe des boutons alignés */}
-                      <div className="flex items-center gap-2">
-                        <Link href={`invoices/${invoice.id_int}/edit`}>
-                          <Button size="sm" className="cursor-pointer">Éditer</Button>
-                        </Link>
+                    function getNextStatus(current: string) {
+                      const index = statusCycle.indexOf(current);
+                      return statusCycle[(index + 1) % statusCycle.length];
+                    }
 
-                        {profile && (
-                          <PDFDownloadLink
-                            document={<InvoicePDF invoice={invoice} profile={profile} />}
-                            fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
-                          >
-                            {({ loading }) =>
-                              loading ? (
-                                <span className="text-xs text-gray-400">Chargement…</span>
-                              ) : (
-                                <Button size="sm" variant="ghost" className="text-xs px-2 py-1 cursor-pointer">
-                                  Télécharger
-                                </Button>
-                              )
-                            }
-                          </PDFDownloadLink>
+                    const handleStatusChange = async () => {
+                      const newStatus = getNextStatus(invoice.status);
+
+                      // MAJ en base :
+                      await supabase
+                        .from("invoices")
+                        .update({ status: newStatus })
+                        .eq("id_int", invoice.id_int);
+                      // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
+                      setInvoices((prevInvoices) =>
+                        prevInvoices.map((q) =>
+                          q.id_int === invoice.id_int ? { ...q, status: newStatus } : q
+                        )
+                      );
+                    };
+                    
+
+                    return (
+                      <li key={invoice.id_int} className="flex items-center justify-between border-b pb-1">
+                        <div>
+                          <span className="font-medium">#{invoice.id_int.toString().padStart(4, "0")}</span> – {total} € – {invoice.clients?.company}
+                          <button
+                            title={`Statut du devis : ${invoice.status}`}
+                            className="cursor-pointer"
+                            onClick={handleStatusChange}>
+                            {icon}
+                          </button>
+                        </div>
+
+                        {/* Groupe des boutons alignés */}
+                        <div className="flex items-center gap-2">
+                          <Link href={`invoices/${invoice.id_int}/edit`}>
+                            <Button size="sm" className="cursor-pointer">Éditer</Button>
+                          </Link>
+
+                          {profile && invoice.clients && (
+                            <PDFDownloadLink
+                                document={<InvoicePDF invoice={invoice} profile={profile} />}
+                                fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
+                            >
+                                {({ loading }) =>
+                                loading ? (
+                                    <span className="text-xs text-gray-400">Chargement…</span>
+                                ) : (
+                                    <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
+                                )
+                                }
+                            </PDFDownloadLink>
                         )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </CardContent>
           </Card>

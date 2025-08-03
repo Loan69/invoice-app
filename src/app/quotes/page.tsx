@@ -14,13 +14,36 @@ import { useUser } from "@supabase/auth-helpers-react";
 import { Profile } from "@/types/profile";
 import { getTotalAmount } from "@/lib/utils";
 
-
 export default function QuoteList() {
   const user = useUser();
   const [profile, setProfile] = useState<Profile>();
   const supabase = createClientComponentClient();
   const [quotes, setQuotes] = useState<QuoteWithClient[]>([]);
   const router = useRouter();
+
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  // Fonction pour afficher le message avec couleur et animation
+  const showMessage = (message: string, success: boolean) => {
+    setStatusMessage(message);
+    setIsSuccess(success);
+    setVisible(true);
+  };
+
+  // Disparition progressive après 4 secondes
+  useEffect(() => {
+    if (!visible) return;
+
+    const timer1 = setTimeout(() => setVisible(false), 4000); // cacher après 4s
+    const timer2 = setTimeout(() => setStatusMessage(null), 4600); // supprimer message après animation
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [visible]);
 
   // Récupération du profil de l'utilisateur
   useEffect(() => {
@@ -69,6 +92,31 @@ export default function QuoteList() {
     router.push('/dashboard');
   };
 
+  // Fonction transformation devis → facture
+  const transformToInvoice = async (quoteId: number) => {
+    showMessage("", false); // Reset message
+    try {
+      const response = await fetch(`${window.location.origin}/api/quote/[${quoteId}]/transform-to-invoice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quoteId }),
+      });
+      const result = await response.json();
+  
+      if (!response.ok) {
+        showMessage(`Erreur : ${result.error || 'Erreur inconnue'}`, false);
+        return;
+      }
+      showMessage('"Le devis a bien été transformé en facture."', true);
+  
+    } catch (error: any) {
+      showMessage(`Erreur lors de la création de la facture : ${error.message}`, false);
+    }
+  };
+  
+
   return (
     <div>
       <Header />
@@ -84,6 +132,18 @@ export default function QuoteList() {
           </button>
         </div>
 
+        {/* Message d'état */}
+        {statusMessage && (
+          <div
+            className={`mx-auto mb-4 max-w-2xl p-3 rounded text-center text-sm font-medium
+              transition-opacity duration-600
+              ${isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+              ${visible ? 'opacity-100' : 'opacity-0'}`}
+          >
+            {statusMessage}
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm border">
             <thead className="bg-gray-100">
@@ -95,43 +155,59 @@ export default function QuoteList() {
                 <th className="px-4 py-2 text-left">Statut</th>
                 <th className="px-4 py-2">Éditer</th>
                 <th className="px-4 py-2 text-left">Télécharger</th>
+                <th className="px-4 py-2 text-left">Transformer</th>
               </tr>
             </thead>
             <tbody>
-                {quotes.map((quote) => (
-                    <tr key={quote.id_int} className="border-t">
-                    <td className="px-4 py-2">
-                        <span className="font-mono text-sm">D-{quote.id_int.toString().padStart(4, "0")}</span>
-                    </td>
-                    <td className="px-4 py-2">{formatDateFR(quote.datequo)}</td>
-                    <td className="px-4 py-2">{quote.clients?.is_professional}
-                        {quote.clients?.is_professional ? quote.clients?.company : `${quote.clients?.last_name ?? ''} ${quote.clients?.first_name ?? ''}`}
-                    </td>
-                    <td className="px-4 py-2">{getTotalAmount(quote.items)} €</td>
-                    <td className="px-4 py-2">{quote.status}</td>
-                    <td className="px-4 py-2 text-center">
-                        <Link href={`/invoices/${quote.id_int}/edit`}>
-                        <Button variant="outline" className="cursor-pointer">Éditer</Button>
-                        </Link>
-                    </td>
-                    <td>
-                        {profile && quote.clients && (
-                            <PDFDownloadLink
-                                document={<QuotePDF quote={quote} profile={profile} />}
-                                fileName={`Devis-${quote.id_int.toString().padStart(4, "0")}.pdf`}
-                            >
-                                {({ loading }) =>
-                                loading ? (
-                                    <span className="text-xs text-gray-400">Chargement…</span>
-                                ) : (
-                                    <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
-                                )
-                                }
-                            </PDFDownloadLink>
-                        )}
-                    </td>
-                    </tr>
-                ))}
+              {quotes.map((quote) => (
+                <tr key={quote.id_int} className="border-t">
+                  <td className="px-4 py-2">
+                    <span className="font-mono text-sm">D-{quote.id_int.toString().padStart(4, "0")}</span>
+                  </td>
+                  <td className="px-4 py-2">{formatDateFR(quote.datequo)}</td>
+                  <td className="px-4 py-2">
+                    {quote.clients?.is_professional
+                      ? quote.clients?.company
+                      : `${quote.clients?.last_name ?? ''} ${quote.clients?.first_name ?? ''}`}
+                  </td>
+                  <td className="px-4 py-2">{getTotalAmount(quote.items)} €</td>
+                  <td className="px-4 py-2">{quote.status}</td>
+                  <td className="px-4 py-2 text-center">
+                    <Link href={`/invoices/${quote.id_int}/edit`}>
+                      <Button variant="outline" className="cursor-pointer">Éditer</Button>
+                    </Link>
+                  </td>
+                  <td>
+                    {profile && quote.clients && (
+                      <PDFDownloadLink
+                        document={<QuotePDF quote={quote} profile={profile} />}
+                        fileName={`Devis-${quote.id_int.toString().padStart(4, "0")}.pdf`}
+                      >
+                        {({ loading }) =>
+                          loading ? (
+                            <span className="text-xs text-gray-400">Chargement…</span>
+                          ) : (
+                            <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
+                          )
+                        }
+                      </PDFDownloadLink>
+                    )}
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    {/* Bouton visible seulement si devis accepté */}
+                    {quote.status === 'Accepté' ? (
+                      <Button
+                        onClick={() => transformToInvoice(quote.id_int)}
+                        className="cursor-pointer"
+                      >
+                        Transformer
+                      </Button>
+                    ) : (
+                      <span className="text-gray-400 text-xs">N/A</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
