@@ -216,7 +216,7 @@ export default function InvoicePDF({ invoice, profile }: Props) {
 
           {/* Client */}
           <View style={styles.section}>
-            <Text style={styles.bold}>A l&apos;attention de :</Text>
+            <Text style={styles.bold}>À l&apos;attention de :</Text>
             {invoice.clients?.last_name && (<Text>{invoice.clients?.first_name} {invoice.clients?.last_name}</Text>)}
             {invoice.clients?.company && (<Text>Société : {invoice.clients?.company}</Text>)}
             {invoice.clients?.address && (<Text>Adresse : {invoice.clients?.address}</Text>)}

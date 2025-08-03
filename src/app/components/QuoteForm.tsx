@@ -15,31 +15,32 @@ import { Client } from "@/types/client";
 import { Template } from "@/types/template";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUser } from "@supabase/auth-helpers-react";
-import { Invoice } from "@/types/invoice";
 import { Items } from "@/types/items";
+import { Quote } from "@/types/quote";
 
-type InvoiceFormProps = {
+type QuoteFormProps = {
   setIsDirty?: (v: boolean) => void;
   mode?: "create" | "edit";
-  invoiceData?: Partial<Invoice>;
-  invoiceId?: string;
+  quoteData?: Partial<Quote>;
+  quoteId?: string;
 };
 
-export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFormProps) {
+export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProps) {
   const user = useUser();
   const supabase = createClientComponentClient();
   const router = useRouter();
   const [clients, setClients] = useState<Client[] | [] >([]);
   const [form, setForm] = useState({
-    client_id: invoiceData?.client_id?.toString() || "",
-    datefac: invoiceData?.datefac || new Date().toISOString().split("T")[0],
-    items: Array.isArray(invoiceData?.items)
-    ? invoiceData?.items.map(item => ({
+    client_id: quoteData?.client_id?.toString() || "",
+    title: quoteData?.title || "",
+    datequo: quoteData?.datequo || new Date().toISOString().split("T")[0],
+    items: Array.isArray(quoteData?.items)
+    ? quoteData?.items.map((item: Items) => ({
         description: item.description || "",
         amount: item.amount || ""
       }))
     : [{ description: "", amount: "" }],
-    status: invoiceData?.status || "À régler",
+    status: quoteData?.status || "À envoyer",
   });
   const [templates, setTemplates] = useState<Template[] | []>([]);
   const [showTemplateName, setShowTemplateName] = useState(false);
@@ -48,7 +49,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null); // id du template sélectionné
 
 
-  // Requête pour rechercher un client à qui affecter la facture
+  // Requête pour rechercher un client à qui affecter le devis
   useEffect(() => {
     const fetchClients = async () => {
       if (!user) return;
@@ -64,10 +65,10 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     fetchClients();
   }, [user]);
 
-  // Requête pour aller chercher les templates
+  // Requête pour aller chercher les templates de devis
   useEffect(() => {
     const fetchTemplates = async () => {
-      const { data, error } = await supabase.from("invoice_templates").select("*");
+      const { data, error } = await supabase.from("quote_templates").select("*");
       if (error) {
         console.error("Erreur chargement templates :", error);
         setTemplates([]); // fallback
@@ -78,7 +79,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     fetchTemplates();
   }, [user]);
 
-  // Insertion des valeurs du formulaire dans la table invoices ou modification des données existantes
+  // Insertion des valeurs du formulaire dans la table quotes ou modification des données existantes
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -91,7 +92,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     if (mode !== "edit") {
       // Aller chercher le plus grand id_int existant pour cet utilisateur
       const { data: maxData, error: maxError } = await supabase
-        .from("invoices")
+        .from("quotes")
         .select("id_int", { head: false })
         .eq("user_id", user?.id)
         .order("id_int", { ascending: false })
@@ -112,20 +113,22 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       ...form,
       client_id: parseInt(form.client_id),
       user_id: user?.id,
-      id_int: mode === "edit" && invoiceData?.id_int ? invoiceData.id_int : newIdInt,
+      id_int: mode === "edit" && quoteData?.id_int ? quoteData.id_int : newIdInt,
     };
   
     let error;
-    if (mode === "edit" && invoiceData?.id_int) {
+    // Modification d'un devis
+    if (mode === "edit" && quoteData?.id_int) {
       const { error: updateError } = await supabase
-        .from("invoices")
+        .from("quotes")
         .update(payload)
-        .eq("id_int", invoiceData.id_int)
+        .eq("id_int", quoteData.id_int)
         .eq("user_id", user?.id);
       error = updateError;
     } else {
+      // Ajout d'un nouveau devis
       const { error: insertError } = await supabase
-        .from("invoices")
+        .from("quotes")
         .insert([payload]);
       error = insertError;
     }
@@ -158,7 +161,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
   // Gestion de la suppression d'un template
   const handleDeleteTemplate = async (id: number) => {
     const { error } = await supabase
-      .from("invoice_templates")
+      .from("quote_templates")
       .delete()
       .eq("id_int", id);
   
@@ -166,7 +169,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
       console.error("Erreur suppression template :", error.message);
     } else {
       // Met à jour la liste
-      const { data, error: fetchError } = await supabase.from("invoice_templates").select("*");
+      const { data, error: fetchError } = await supabase.from("quote_templates").select("*");
       if (fetchError) console.error("Erreur refresh templates :", fetchError.message);
       else setTemplates(data || []);
     }
@@ -178,7 +181,6 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
     if (isNaN(num)) return "";
     return num.toFixed(2).replace('.', ',');
   };
-
 
   return (
     <div className="p-1 items-start w-full">
@@ -218,7 +220,6 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
                               amount: item.amount ?? ""
                             }))
                           : [{ description: "", amount: "" }],
-                        status: template.status || "",
                       });
                       setOpen(false);
                     }}
@@ -250,6 +251,16 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
 
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full">
 
+      <div>
+          <Label>Titre du devis</Label>
+          <Input
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            placeholder="Ex : Pose d'un carrelage"
+          />
+        </div>
+
         <div>
           <Label>Client</Label>
           <Select
@@ -277,11 +288,11 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
         </div>
 
         <div>
-          <Label>Date de facturation</Label>
+          <Label>Date du devis</Label>
           <Input
             type="date"
-            name="datefac"
-            value={form.datefac}
+            name="datequo"
+            value={form.datequo}
             onChange={handleChange}
             required
           />
@@ -297,7 +308,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
               <button
                 type="button"
                 onClick={() => {
-                  const updatedItems = form.items?.filter((_, i) => i !== index);
+                  const updatedItems = form.items?.filter((_: Items, i: number) => i !== index);
                   setForm({ ...form, items: updatedItems });
                   if (setIsDirty) setIsDirty(true);
                 }}
@@ -363,9 +374,10 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="À régler">À régler</SelectItem>
-              <SelectItem value="Payée">Payée</SelectItem>
-              <SelectItem value="En retard">En retard</SelectItem>
+              <SelectItem value="À envoyer">À envoyer</SelectItem>
+              <SelectItem value="Envoyé">Envoyé</SelectItem>
+              <SelectItem value="Accepté">Accepté</SelectItem>
+              <SelectItem value="Refusé">Refusé</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -374,7 +386,7 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
         <Button
           type="submit" 
           className="w-full cursor-pointer"
-        >{mode === "edit" ? "Modifier la facture" : "Créer la facture"}
+        >{mode === "edit" ? "Modifier le devis" : "Créer le devis"}
         </Button>
 
         {/* Enregistrement d'un modèle de facture */}
@@ -390,54 +402,51 @@ export default function InvoiceForm({ setIsDirty, mode, invoiceData }: InvoiceFo
         </Button>
 
         {showTemplateName && (
-  <div className="space-y-2 pt-2">
-    <Label>Nom du modèle</Label>
-    <Input
-      value={templateName}
-      onChange={(e) => setTemplateName(e.target.value)}
-      placeholder="Ex : Facture standard client B2B"
-    />
-    <Button
-      type="button"
-      className="w-full mt-2 cursor-pointer"
-      onClick={async () => {
-        if (!templateName) {
-          alert("Le nom du modèle est requis.");
-          return;
-        }
+          <div className="space-y-2 pt-2">
+            <Label>Nom du modèle</Label>
+            <Input
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              placeholder="Ex : Devis standard client B2B"
+            />
+            <Button
+              type="button"
+              className="w-full mt-2 cursor-pointer"
+              onClick={async () => {
+                if (!templateName) {
+                  alert("Le nom du modèle est requis.");
+                  return;
+                }
 
-        const hasEmptyFields = form.items?.some(
-          (item) => !item.description || !item.amount
-        );
+                const hasEmptyFields = form.items?.some(
+                  (item: Items) => !item.description || !item.amount
+                );
 
-        if (hasEmptyFields) {
-          alert("Toutes les prestations doivent avoir une description et un montant.");
-          return;
-        }
+                if (hasEmptyFields) {
+                  alert("Toutes les prestations doivent avoir une description et un montant.");
+                  return;
+                }
 
-        const { error } = await supabase.from("invoice_templates").insert([{
-          name: templateName,
-          items: form.items,
-          status: form.status,
-          user_id: user?.id
-        }]);
+                const { error } = await supabase.from("quote_templates").insert([{
+                  name: templateName,
+                  items: form.items,
+                  user_id: user?.id
+                }]);
 
-        if (error) {
-          console.log("Supabase insert error:", error);
-          alert("Erreur lors de l'enregistrement : " + error.message);
-        } else {
-          alert("Modèle enregistré !");
-          setTemplateName("");
-          setShowTemplateName(false);
-        }
-      }}
-    >
-      Sauvegarder
-    </Button>
-  </div>
-)}
-
-
+                if (error) {
+                  console.log("Supabase insert error:", error);
+                  alert("Erreur lors de l'enregistrement : " + error.message);
+                } else {
+                  alert("Modèle enregistré !");
+                  setTemplateName("");
+                  setShowTemplateName(false);
+                }
+              }}
+            >
+              Sauvegarder
+            </Button>
+          </div>
+        )}
       </form>
     </div>
   );

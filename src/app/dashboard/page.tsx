@@ -11,7 +11,6 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from '../components/InvoicePDF';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { InvoiceWithClient } from '@/types/invoiceWithClient'
-import { Client } from '@/types/client'
 import { useUser } from '@supabase/auth-helpers-react'
 import { Profile } from '@/types/profile'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -19,6 +18,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import SubscriptionBadge from '../components/SubscriptionBadge';
 import { GraphInvoice } from '@/types/graphInvoice';
 import { getTotalAmount } from "@/lib/utils";
+import { QuoteWithClient } from '@/types/quoteWithClient';
+import { CheckCircle, XCircle, Clock, Send } from "lucide-react";
+import QuotePDF from '../components/QuotePDF';
 
 
 export default function DashboardPage() {
@@ -27,7 +29,7 @@ export default function DashboardPage() {
   const router = useRouter()
 
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([])
-  const [clients, setClients] = useState<Client[]>([]);
+  const [quotes, setQuotes] = useState<QuoteWithClient[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true); // loading flag
 
@@ -68,23 +70,23 @@ export default function DashboardPage() {
   }, [profile, router])
   
 
-  // Récupération des derniers clients à afficher
+  // Récupération des derniers devis à afficher
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchQuotes = async () => {
       const { data, error } = await supabase
-        .from("clients")
-        .select("id_int, last_name, first_name, company, created_at, user_id")
+        .from("quotes")
+        .select("*, clients (company, last_name, first_name, address, email, is_professional)")
         .order("created_at", { ascending: false })
         .limit(5);
       
       if (!error && data) {
-        setClients(data);
+        setQuotes(data);
       } else {
         console.error("Erreur lors de la récupération des clients:", error);
       }
     };
 
-    fetchClients();
+    fetchQuotes();
   }, []);
 
   // Récupération des dernières factures à afficher
@@ -172,26 +174,41 @@ export default function DashboardPage() {
             <SubscriptionBadge isSubscribed={!!profile?.is_subscribed} isDemo={!!profile?.is_demo} />
 
           </div>
+
+          {/* Bouton - Ajouter un client */}
           <Link href="/clients/new">
             <Button
               variant="default"
               className='cursor-pointer'
             >+ Ajouter un client</Button>
           </Link>
-          <Link href="/invoices/new">
+
+          {/* Bouton - Créer un devis */}
+          <Link href="/quotes/new">
             <Button
               variant="outline"
               className='cursor-pointer'
-            >+ Créer une facture</Button>
+            >+ Créer un devis</Button>
           </Link>
-          <Link href="/settings">
+
+          {/* Bouton - Créer une facture */}
+          <Link href="/invoices/new">
             <Button
               variant="default"
-              className="text-white top-4 right-4 cursor-pointer"
+              className='cursor-pointer'
+            >+ Créer une facture</Button>
+          </Link>
+
+          {/* Bouton - Paramètre */}
+          <Link href="/settings">
+            <Button
+              variant="outline"
+              className="top-4 right-4 cursor-pointer"
             >
              + Paramètres
             </Button>
           </Link>
+
         </div>
         <LogoutButton />
       </header>
@@ -200,14 +217,14 @@ export default function DashboardPage() {
       <main className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
           
-          {/* Clients récents */}
+          {/* Boutons - Liste des clients */}
           <Card>
             <CardHeader>
               <CardTitle>
                 <div className="flex items-center justify-between w-full">
                   <span className="flex items-center">
                     <Users className="inline-block mr-2" />
-                    Clients récents
+                    Vos clients
                   </span>
                   <Link href="/clients">
                     <Button variant="outline" className='cursor-pointer'>Voir tous les clients</Button>
@@ -215,16 +232,111 @@ export default function DashboardPage() {
                 </div>
               </CardTitle>
             </CardHeader>
+          </Card>
+
+          {/* Devis récents */}
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <div className="flex items-center justify-between w-full">
+                  <span className="flex items-center">
+                    <Users className="inline-block mr-2" />
+                    Devis récents
+                  </span>
+                  <Link href="/quotes">
+                    <Button variant="outline" className="cursor-pointer">Voir tous les devis</Button>
+                  </Link>
+                </div>
+              </CardTitle>
+            </CardHeader>
             <CardContent>
-              {clients.length === 0 ? (
-              <p className="text-sm text-gray-400">Aucun client récent.</p>
+              {quotes.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucun devis récent.</p>
               ) : (
-              <ul className="text-sm text-gray-600 space-y-1">
-                {clients.map((client) => (
-                  <li key={client.id_int}>
-                     #{client.id_int.toString().padStart(4, "0")} – {client.last_name} {client.first_name} - {client.company}</li>
-                ))}
-              </ul>
+                <ul className="text-sm text-gray-600 space-y-2">
+                  {quotes.map((quote) => {
+                    const total = getTotalAmount(quote.items).toFixed(2).replace(".", ",");
+                    
+                    // Icone des statuts du devis
+                    function getStatusIcon(status: string) {
+                      const baseClass = "ml-2 w-4 h-4 inline";
+                      switch (status.toLowerCase()) {
+                        case "accepté":
+                          return <CheckCircle className={`${baseClass} text-green-500`} />;
+                        case "refusé":
+                          return <XCircle className={`${baseClass} text-red-500`} />;
+                        case "à envoyer":
+                          return <Clock className={`${baseClass} text-yellow-500`} />;
+                        case "envoyé":
+                          return <Send className={`${baseClass} text-blue-500`} />;
+                        default:
+                          return null;
+                      }
+                    }
+
+                    const icon = getStatusIcon(quote.status);
+                    
+                    const statusCycle = ["À envoyer", "Envoyé", "Accepté", "Refusé"];
+
+                    function getNextStatus(current: string) {
+                      const index = statusCycle.indexOf(current);
+                      return statusCycle[(index + 1) % statusCycle.length];
+                    }
+
+                    const handleStatusChange = async () => {
+                      const newStatus = getNextStatus(quote.status);
+
+                      // MAJ en base :
+                      await supabase
+                        .from("quotes")
+                        .update({ status: newStatus })
+                        .eq("id_int", quote.id_int);
+                      // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
+                      setQuotes((prevQuotes) =>
+                        prevQuotes.map((q) =>
+                          q.id_int === quote.id_int ? { ...q, status: newStatus } : q
+                        )
+                      );
+                    };
+                    
+
+                    return (
+                      <li key={quote.id_int} className="flex items-center justify-between border-b pb-1">
+                        <div>
+                          <span className="font-medium">#{quote.id_int.toString().padStart(4, "0")}</span> – {total} € – {quote.clients?.company}
+                          <button
+                            title={`Statut du devis : ${quote.status}`}
+                            className="cursor-pointer"
+                            onClick={handleStatusChange}>
+                            {getStatusIcon(quote.status)}
+                          </button>
+                        </div>
+                        
+                        {/* Groupe des boutons alignés */}
+                        <div className="flex items-center gap-2">
+                          <Link href={`quotes/${quote.id_int}/edit`}>
+                            <Button size="sm" className="cursor-pointer">Éditer</Button>
+                          </Link>
+
+                          {profile && quote.clients && (
+                            <PDFDownloadLink
+                                document={<QuotePDF quote={quote} profile={profile} />}
+                                fileName={`Devis-${quote.id_int.toString().padStart(4, "0")}.pdf`}
+                            >
+                                {({ loading }) =>
+                                loading ? (
+                                    <span className="text-xs text-gray-400">Chargement…</span>
+                                ) : (
+                                    <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
+                                )
+                                }
+                            </PDFDownloadLink>
+                        )}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </CardContent>
           </Card>

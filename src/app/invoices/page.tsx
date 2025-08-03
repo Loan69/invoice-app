@@ -22,12 +22,13 @@ export default function FacturesList() {
   const [invoices, setInvoices] = useState<InvoiceWithClient[]>([]);
   const router = useRouter();
 
+  // Chargment des données de l'utilisateur
   useEffect(() => {
     const fetchUser = async () => {
       if (!user) return;
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, first_name, company, address, email, phone, logo_url")
+        .select("id, first_name, company, address, email, phone, logo_url, tax_status")
         .eq("id", user?.id)
         .maybeSingle();
       if (!error && data) {
@@ -45,6 +46,7 @@ export default function FacturesList() {
     return `${day}-${month}-${year}`;
   };
 
+  // Récupération des données de factures
   useEffect(() => {
     const fetchFactures = async () => {
       const { data, error } = await supabase
