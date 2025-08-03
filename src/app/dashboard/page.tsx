@@ -308,10 +308,10 @@ export default function DashboardPage() {
                             title={`Statut du devis : ${quote.status}`}
                             className="cursor-pointer"
                             onClick={handleStatusChange}>
-                            {getStatusIcon(quote.status)}
+                            {icon}
                           </button>
                         </div>
-                        
+
                         {/* Groupe des boutons alignés */}
                         <div className="flex items-center gap-2">
                           <Link href={`quotes/${quote.id_int}/edit`}>
