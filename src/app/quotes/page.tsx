@@ -111,8 +111,12 @@ export default function QuoteList() {
       }
       showMessage('"Le devis a bien été transformé en facture."', true);
   
-    } catch (error: any) {
-      showMessage(`Erreur lors de la création de la facture : ${error.message}`, false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showMessage(`Erreur lors de la création de la facture : ${error.message}`, false);
+      } else {
+        showMessage(`Erreur inattendue`, false);
+      }
     }
   };
   
