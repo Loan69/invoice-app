@@ -410,7 +410,7 @@ export default function DashboardPage() {
                         <div>
                           <span className="font-medium">#{invoice.id_int.toString().padStart(4, "0")}</span> – {total} € – {invoice.clients?.company}
                           <button
-                            title={`Statut du devis : ${invoice.status}`}
+                            title={`Statut de la facture : ${invoice.status}`}
                             className="cursor-pointer"
                             onClick={handleStatusChange}>
                             {icon}
