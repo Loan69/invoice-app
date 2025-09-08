@@ -162,15 +162,15 @@ export default function LandingPage() {
           <h2 className="text-xl md:text-2xl font-semibold text-center mb-10">Ils en parlent mieux que nous</h2>
           <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">"Enfin un outil simple et efficace pour gérer mes factures et devis."</p>
+              <p className="italic">&quot;Enfin un outil simple et efficace pour gérer mes factures et devis.&quot;</p>
               <p className="mt-4 font-semibold">— Julien, graphiste freelance</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">"J&apos;ai pu envoyer ma première facture en 5 minutes. Interface claire et rapide."</p>
+              <p className="italic">&quot;J&apos;ai pu envoyer ma première facture en 5 minutes. Interface claire et rapide.&quot;</p>
               <p className="mt-4 font-semibold">— Marie, consultante</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">"Service client réactif, et la génération PDF est parfaite. Top !"</p>
+              <p className="italic">&quot;Service client réactif, et la génération PDF est parfaite. Top !&quot;</p>
               <p className="mt-4 font-semibold">— Samuel, développeur indépendant</p>
             </div>
           </div>
