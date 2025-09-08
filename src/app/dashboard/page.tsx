@@ -167,51 +167,36 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen flex flex-col justify-between p-6 bg-gray-50">
       {/* Header avec actions */}
-      <header className="flex justify-between items-center mb-6">
-        <div className="space-x-4 justify-between">
-          <div className='flex mb-4'>
-            <h1 className="text-3xl font-bold text-gray-800">Bienvenue {profile?.first_name}</h1>
+      <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+        <div>
+          <div className="flex items-center flex-wrap gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+              Bienvenue {profile?.first_name}
+            </h1>
             <SubscriptionBadge isSubscribed={!!profile?.is_subscribed} isDemo={!!profile?.is_demo} />
-
           </div>
 
-          {/* Bouton - Ajouter un client */}
-          <Link href="/clients/new">
-            <Button
-              variant="default"
-              className='cursor-pointer'
-            >+ Ajouter un client</Button>
-          </Link>
-
-          {/* Bouton - Créer un devis */}
-          <Link href="/quotes/new">
-            <Button
-              variant="outline"
-              className='cursor-pointer'
-            >+ Créer un devis</Button>
-          </Link>
-
-          {/* Bouton - Créer une facture */}
-          <Link href="/invoices/new">
-            <Button
-              variant="default"
-              className='cursor-pointer'
-            >+ Créer une facture</Button>
-          </Link>
-
-          {/* Bouton - Paramètre */}
-          <Link href="/settings">
-            <Button
-              variant="outline"
-              className="top-4 right-4 cursor-pointer"
-            >
-             + Paramètres
-            </Button>
-          </Link>
-
+          {/* Actions utilisateur */}
+          <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
+            <Link href="/clients/new">
+              <Button variant="default" className="w-full sm:w-auto">+ Ajouter un client</Button>
+            </Link>
+            <Link href="/quotes/new">
+              <Button variant="outline" className="w-full sm:w-auto">+ Créer un devis</Button>
+            </Link>
+            <Link href="/invoices/new">
+              <Button variant="default" className="w-full sm:w-auto">+ Créer une facture</Button>
+            </Link>
+            <Link href="/settings">
+              <Button variant="outline" className="w-full sm:w-auto">+ Paramètres</Button>
+            </Link>
+          </div>
         </div>
-        <LogoutButton />
+        <div className="self-end md:self-auto">
+          <LogoutButton />
+        </div>
       </header>
+
 
       {/* Contenu principal */}
       <main className="grid grid-cols-1 lg:grid-cols-2 gap-6">
