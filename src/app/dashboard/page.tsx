@@ -179,16 +179,16 @@ export default function DashboardPage() {
           {/* Actions utilisateur */}
           <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
             <Link href="/clients/new">
-              <Button variant="default" className="w-full sm:w-auto">+ Ajouter un client</Button>
+              <Button variant="default" className="cursor-pointer w-full sm:w-auto">+ Ajouter un client</Button>
             </Link>
             <Link href="/quotes/new">
-              <Button variant="outline" className="w-full sm:w-auto">+ Créer un devis</Button>
+              <Button variant="outline" className="cursor-pointer w-full sm:w-auto">+ Créer un devis</Button>
             </Link>
             <Link href="/invoices/new">
-              <Button variant="default" className="w-full sm:w-auto">+ Créer une facture</Button>
+              <Button variant="default" className="cursor-pointer w-full sm:w-auto">+ Créer une facture</Button>
             </Link>
             <Link href="/settings">
-              <Button variant="outline" className="w-full sm:w-auto">+ Paramètres</Button>
+              <Button variant="outline" className=" cursor-pointer w-full sm:w-auto">+ Paramètres</Button>
             </Link>
           </div>
         </div>
