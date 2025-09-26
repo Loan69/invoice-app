@@ -429,7 +429,7 @@ export default function DashboardPage() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle>
-                <BarChart2 className="inline-block mr-2" /> Chiffre d'affaires mensuel
+                <BarChart2 className="inline-block mr-2" /> Chiffre d&apos;affaires mensuel
               </CardTitle>
             </CardHeader>
             <CardContent>
