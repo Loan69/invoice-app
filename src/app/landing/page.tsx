@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import ImageCarousel from '../components/ImageCarousel'
+import Image from 'next/image'
 
 export default function LandingPage() {
   const [loading, setLoading] = useState(false)
@@ -42,13 +43,25 @@ export default function LandingPage() {
   return (
     <div>
       {/* Header */}
-      <header className="fixed top-0 right-0 left-0 flex flex-col md:flex-row md:justify-between md:items-center p-4 bg-white shadow-sm z-50">
-        <h1 className="text-xl md:text-2xl font-bold text-gray-800 text-center md:text-left mb-2 md:mb-0">
-          Alfred Facture
-          <span className="block md:inline md:ml-2 text-sm md:text-base font-normal text-gray-500">
-            Facturation simplifiée pour entrepreneurs
-          </span>
-        </h1>
+      <header 
+        className="fixed top-0 right-0 left-0 flex flex-col md:flex-row md:justify-between md:items-center p-4 bg-gradient-to-r from-blue-700 to-indigo-700 shadow-md shadow-sm z-50">
+        <div className='mx-auto flex gap-2 max-w-6xl items-center px-6 py-3'>
+          <div className="flex h-15 w-30 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <Image
+                src="/images/Logo_app.png"
+                alt="Invoice App Logo"
+                width={100}
+                height={100}
+                className="object-contain"
+              />
+          </div>
+          <h1 className="text-xl md:text-2xl font-bold text-white text-center md:text-left mb-2 md:mb-0">
+            Alfred-Facture
+            <span className="block md:inline md:ml-2 text-sm md:text-base font-normal text-gray-300">
+              Facturation simplifiée pour entrepreneurs
+            </span>
+          </h1>
+        </div>
         <nav className="flex justify-center md:justify-end">
           <Link
             href="/login"

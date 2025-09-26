@@ -21,10 +21,11 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // on détermine si on est sur login / signin
+  // on détermine si on est sur login / signup
   const isAuthPage =
     pathname === "/login" ||
-    pathname === "/signin";
+    pathname === "/signup" ||
+    pathname === "/completeProfile";
     // On pourra ajouter en ajouter d'autres ici
 
   const linkVariant = {

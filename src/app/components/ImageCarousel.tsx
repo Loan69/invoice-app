@@ -8,6 +8,7 @@ const images = [
   '/screenshots/dashboard.png',
   '/screenshots/client.png',
   '/screenshots/invoice.png',
+  '/screenshots/quote.png',
   // Ajouter d'autres captures
 ]
 
