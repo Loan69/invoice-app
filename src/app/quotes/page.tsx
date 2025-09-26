@@ -159,7 +159,7 @@ export default function QuoteList() {
                 <th className="px-4 py-2 text-left">Statut</th>
                 <th className="px-4 py-2">Éditer</th>
                 <th className="px-4 py-2 text-left">Télécharger</th>
-                <th className="px-4 py-2 text-left">Transformer</th>
+                <th className="px-4 py-2 text-left">Transformer en facture</th>
               </tr>
             </thead>
             <tbody>
@@ -177,7 +177,7 @@ export default function QuoteList() {
                   <td className="px-4 py-2">{getTotalAmount(quote.items)} €</td>
                   <td className="px-4 py-2">{quote.status}</td>
                   <td className="px-4 py-2 text-center">
-                    <Link href={`/invoices/${quote.id_int}/edit`}>
+                    <Link href={`/quotes/${quote.id_int}/edit`}>
                       <Button variant="outline" className="cursor-pointer">Éditer</Button>
                     </Link>
                   </td>
@@ -207,7 +207,7 @@ export default function QuoteList() {
                         Transformer
                       </Button>
                     ) : (
-                      <span className="text-gray-400 text-xs">N/A</span>
+                      <span className="text-gray-400 text-xs">Devis non accepté</span>
                     )}
                   </td>
                 </tr>

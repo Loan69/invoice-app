@@ -9,12 +9,12 @@ export default function SubscriptionBadge({ isSubscribed, isDemo }: Subscription
   let label = '';
   let color = '';
 
-  if (isDemo) {
-    label = 'Démo gratuite';
-    color = 'bg-yellow-100 text-yellow-800';
-  } else if (isSubscribed) {
+  if (isSubscribed) {
     label = 'Abonnement actif';
     color = 'bg-green-100 text-green-800';
+  } else if (isDemo) {
+    label = 'Démo gratuite';
+    color = 'bg-yellow-100 text-yellow-800';
   } else {
     return null; // Aucun badge si ni démo ni abonnement actif
   }

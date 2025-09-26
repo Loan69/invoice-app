@@ -21,6 +21,7 @@ import { getTotalAmount } from "@/lib/utils";
 import { QuoteWithClient } from '@/types/quoteWithClient';
 import { CheckCircle, XCircle, Clock, Send } from "lucide-react";
 import QuotePDF from '../components/QuotePDF';
+import Header from '../components/Header';
 
 
 export default function DashboardPage() {
@@ -89,11 +90,34 @@ export default function DashboardPage() {
     fetchQuotes();
   }, []);
 
+  // Calcul du CA sur les 12 derniers mois
+  const fetchLast12MonthsInvoices = async () => {
+    const today = new Date();
+    const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), 1);
+  
+    const { data: last12MonthsInvoices, error } = await supabase
+      .from("invoices")
+      .select("datefac, items, status")
+      .gte("datefac", lastYear.toISOString());
+  
+    if (!error && last12MonthsInvoices) {
+      setGraphData(last12MonthsInvoices);
+  
+      const totalPaid = last12MonthsInvoices
+        .filter((inv) => inv.status === "Payée")
+        .reduce((acc, curr) => acc + getTotalAmount(curr.items), 0);
+      const pendingCount = last12MonthsInvoices.filter((inv) => inv.status === "À régler").length;
+  
+      setTotalRevenue(totalPaid);
+      setPendingInvoices(pendingCount);
+    } else {
+      console.error("Erreur lors de la récupération des factures sur 12 mois :", error);
+    }
+  };
+
   // Récupération des dernières factures à afficher
   useEffect(() => {
     const fetchData = async () => {
-      const today = new Date();
-      const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), 1); // 1er du mois précédent, il y a 12 mois
   
       // 1. Dernières 5 factures
       const { data: recentInvoices, error: errorRecent } = await supabase
@@ -107,22 +131,7 @@ export default function DashboardPage() {
       }
   
       // 2. Factures des 12 derniers mois
-      const { data: last12MonthsInvoices, error: errorLast12 } = await supabase
-        .from("invoices")
-        .select("datefac, items, status")
-        .gte("datefac", lastYear.toISOString());
-  
-      if (!errorLast12 && last12MonthsInvoices) {
-        setGraphData(last12MonthsInvoices); // tu crées un state spécifique
-        const totalPaid = last12MonthsInvoices
-          .filter((inv) => inv.status === "Payée")
-          .reduce((acc, curr) => acc + getTotalAmount(curr.items), 0);
-        const pendingCount = last12MonthsInvoices.filter((inv) => inv.status === "À régler").length;
-        setTotalRevenue(totalPaid);
-        setPendingInvoices(pendingCount);
-      } else {
-        console.error("Erreur lors de la récupération des factures sur 12 mois :", errorLast12);
-      }
+      fetchLast12MonthsInvoices();
     };
   
     fetchData();
@@ -165,315 +174,300 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-6 bg-gray-50">
-      {/* Header avec actions */}
-      <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-        <div>
-          <div className="flex items-center flex-wrap gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-              Bienvenue {profile?.first_name}
-            </h1>
-            <SubscriptionBadge isSubscribed={!!profile?.is_subscribed} isDemo={!!profile?.is_demo} />
+    <div>
+      <Header />
+    
+      <div className="min-h-screen flex flex-col justify-between p-6 bg-gray-50">
+        {/* Message de bienvenue */}
+        <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+            <div className="flex items-center flex-wrap gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+                Bienvenue {profile?.first_name}
+              </h1>
+              <SubscriptionBadge isSubscribed={!!profile?.is_subscribed} isDemo={!!profile?.is_demo} />
+            </div>
+        </header>
+
+
+        {/* Contenu principal */}
+        <main className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            
+            {/* Boutons - Liste des clients */}
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center">
+                      <Users className="inline-block mr-2" />
+                      Vos clients
+                    </span>
+                    <Link href="/clients">
+                      <Button variant="outline" className='cursor-pointer'>Voir tous les clients</Button>
+                    </Link>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+            </Card>
+
+            {/* Devis récents */}
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center">
+                      <Users className="inline-block mr-2" />
+                      Devis récents
+                    </span>
+                    <Link href="/quotes">
+                      <Button variant="outline" className="cursor-pointer">Voir tous les devis</Button>
+                    </Link>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {quotes.length === 0 ? (
+                  <p className="text-sm text-gray-400">Aucun devis récent.</p>
+                ) : (
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    {quotes.map((quote) => {
+                      const total = getTotalAmount(quote.items).toFixed(2).replace(".", ",");
+                      
+                      // Icone des statuts du devis
+                      function getStatusIcon(status: string) {
+                        const baseClass = "ml-2 w-4 h-4 inline";
+                        switch (status.toLowerCase()) {
+                          case "accepté":
+                            return <CheckCircle className={`${baseClass} text-green-500`} />;
+                          case "refusé":
+                            return <XCircle className={`${baseClass} text-red-500`} />;
+                          case "à envoyer":
+                            return <Clock className={`${baseClass} text-yellow-500`} />;
+                          case "envoyé":
+                            return <Send className={`${baseClass} text-blue-500`} />;
+                          default:
+                            return null;
+                        }
+                      }
+
+                      const icon = getStatusIcon(quote.status);
+                      
+                      const statusCycle = ["À envoyer", "Envoyé", "Accepté", "Refusé"];
+
+                      function getNextStatus(current: string) {
+                        const index = statusCycle.indexOf(current);
+                        return statusCycle[(index + 1) % statusCycle.length];
+                      }
+
+                      const handleStatusChange = async () => {
+                        const newStatus = getNextStatus(quote.status);
+
+                        // MAJ en base :
+                        await supabase
+                          .from("quotes")
+                          .update({ status: newStatus })
+                          .eq("id_int", quote.id_int);
+                        // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
+                        setQuotes((prevQuotes) =>
+                          prevQuotes.map((q) =>
+                            q.id_int === quote.id_int ? { ...q, status: newStatus } : q
+                          )
+                        );
+                      };
+                      
+
+                      return (
+                        <li key={quote.id_int} className="flex items-center justify-between border-b pb-1">
+                          <div>
+                            <span className="font-medium">#{quote.id_int.toString().padStart(4, "0")}</span> – {total} € – {quote.clients?.company}
+                            <button
+                              title={`Statut du devis : ${quote.status}`}
+                              className="cursor-pointer"
+                              onClick={handleStatusChange}>
+                              {icon}
+                            </button>
+                          </div>
+
+                          {/* Groupe des boutons alignés */}
+                          <div className="flex items-center gap-2">
+                            <Link href={`quotes/${quote.id_int}/edit`}>
+                              <Button size="sm" className="cursor-pointer">Éditer</Button>
+                            </Link>
+
+                            {profile && quote.clients && (
+                              <PDFDownloadLink
+                                  document={<QuotePDF quote={quote} profile={profile} />}
+                                  fileName={`Devis-${quote.id_int.toString().padStart(4, "0")}.pdf`}
+                              >
+                                  {({ loading }) =>
+                                  loading ? (
+                                      <span className="text-xs text-gray-400">Chargement…</span>
+                                  ) : (
+                                      <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
+                                  )
+                                  }
+                              </PDFDownloadLink>
+                          )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Factures récentes */}
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center">
+                      <Users className="inline-block mr-2" />
+                      Factures récentes
+                    </span>
+                    <Link href="/invoices">
+                      <Button variant="outline" className="cursor-pointer">Voir toutes les factures</Button>
+                    </Link>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+              {invoices.length === 0 ? (
+                  <p className="text-sm text-gray-400">Aucune facture récente.</p>
+                ) : (
+                  <ul className="text-sm text-gray-600 space-y-2">
+                    {invoices.map((invoice) => {
+                      const total = getTotalAmount(invoice.items).toFixed(2).replace(".", ",");
+                      
+                      // Icone des statuts du devis
+                      function getStatusIcon(status: string) {
+                        const baseClass = "ml-2 w-4 h-4 inline";
+                        switch (status.toLowerCase()) {
+                          case "payée":
+                            return <CheckCircle className={`${baseClass} text-green-500`} />;
+                          case "en retard":
+                            return <XCircle className={`${baseClass} text-red-500`} />;
+                          case "à régler":
+                            return <Clock className={`${baseClass} text-yellow-500`} />;
+                          default:
+                            return null;
+                        }
+                      }
+
+                      const icon = getStatusIcon(invoice.status);
+                      
+                      const statusCycle = ["À régler", "Payée", "En retard"];
+
+                      function getNextStatus(current: string) {
+                        const index = statusCycle.indexOf(current);
+                        return statusCycle[(index + 1) % statusCycle.length];
+                      }
+
+                      const handleStatusChange = async () => {
+                        const newStatus = getNextStatus(invoice.status);
+
+                        // MAJ en base :
+                        await supabase
+                          .from("invoices")
+                          .update({ status: newStatus })
+                          .eq("id_int", invoice.id_int);
+                        // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
+                        setInvoices((prevInvoices) =>
+                          prevInvoices.map((q) =>
+                            q.id_int === invoice.id_int ? { ...q, status: newStatus } : q
+                          )
+                        );
+                        // on recharge les données du graph après la MAJ
+                        fetchLast12MonthsInvoices();
+                      };
+                      
+
+                      return (
+                        <li key={invoice.id_int} className="flex items-center justify-between border-b pb-1">
+                          <div>
+                            <span className="font-medium">#{invoice.id_int.toString().padStart(4, "0")}</span> – {total} € – {invoice.clients?.company}
+                            <button
+                              title={`Statut de la facture : ${invoice.status}`}
+                              className="cursor-pointer"
+                              onClick={handleStatusChange}>
+                              {icon}
+                            </button>
+                          </div>
+
+                          {/* Groupe des boutons alignés */}
+                          <div className="flex items-center gap-2">
+                            <Link href={`invoices/${invoice.id_int}/edit`}>
+                              <Button size="sm" className="cursor-pointer">Éditer</Button>
+                            </Link>
+
+                            {profile && invoice.clients && (
+                              <PDFDownloadLink
+                                  document={<InvoicePDF invoice={invoice} profile={profile} />}
+                                  fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
+                              >
+                                  {({ loading }) =>
+                                  loading ? (
+                                      <span className="text-xs text-gray-400">Chargement…</span>
+                                  ) : (
+                                      <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
+                                  )
+                                  }
+                              </PDFDownloadLink>
+                          )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
           </div>
 
-          {/* Actions utilisateur */}
-          <div className="mt-4 flex flex-col sm:flex-row flex-wrap gap-2">
-            <Link href="/clients/new">
-              <Button variant="default" className="cursor-pointer w-full sm:w-auto">+ Ajouter un client</Button>
-            </Link>
-            <Link href="/quotes/new">
-              <Button variant="outline" className="cursor-pointer w-full sm:w-auto">+ Créer un devis</Button>
-            </Link>
-            <Link href="/invoices/new">
-              <Button variant="default" className="cursor-pointer w-full sm:w-auto">+ Créer une facture</Button>
-            </Link>
-            <Link href="/settings">
-              <Button variant="outline" className=" cursor-pointer w-full sm:w-auto">+ Paramètres</Button>
-            </Link>
-          </div>
-        </div>
-        <div className="self-end md:self-auto">
-          <LogoutButton />
-        </div>
-      </header>
-
-
-      {/* Contenu principal */}
-      <main className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
-          
-          {/* Boutons - Liste des clients */}
-          <Card>
+          {/* Graphique / Indicateurs */}
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>
-                <div className="flex items-center justify-between w-full">
-                  <span className="flex items-center">
-                    <Users className="inline-block mr-2" />
-                    Vos clients
-                  </span>
-                  <Link href="/clients">
-                    <Button variant="outline" className='cursor-pointer'>Voir tous les clients</Button>
-                  </Link>
-                </div>
-              </CardTitle>
-            </CardHeader>
-          </Card>
-
-          {/* Devis récents */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-between w-full">
-                  <span className="flex items-center">
-                    <Users className="inline-block mr-2" />
-                    Devis récents
-                  </span>
-                  <Link href="/quotes">
-                    <Button variant="outline" className="cursor-pointer">Voir tous les devis</Button>
-                  </Link>
-                </div>
+                <BarChart2 className="inline-block mr-2" /> Chiffre d'affaires mensuel
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {quotes.length === 0 ? (
-                <p className="text-sm text-gray-400">Aucun devis récent.</p>
-              ) : (
-                <ul className="text-sm text-gray-600 space-y-2">
-                  {quotes.map((quote) => {
-                    const total = getTotalAmount(quote.items).toFixed(2).replace(".", ",");
-                    
-                    // Icone des statuts du devis
-                    function getStatusIcon(status: string) {
-                      const baseClass = "ml-2 w-4 h-4 inline";
-                      switch (status.toLowerCase()) {
-                        case "accepté":
-                          return <CheckCircle className={`${baseClass} text-green-500`} />;
-                        case "refusé":
-                          return <XCircle className={`${baseClass} text-red-500`} />;
-                        case "à envoyer":
-                          return <Clock className={`${baseClass} text-yellow-500`} />;
-                        case "envoyé":
-                          return <Send className={`${baseClass} text-blue-500`} />;
-                        default:
-                          return null;
-                      }
-                    }
-
-                    const icon = getStatusIcon(quote.status);
-                    
-                    const statusCycle = ["À envoyer", "Envoyé", "Accepté", "Refusé"];
-
-                    function getNextStatus(current: string) {
-                      const index = statusCycle.indexOf(current);
-                      return statusCycle[(index + 1) % statusCycle.length];
-                    }
-
-                    const handleStatusChange = async () => {
-                      const newStatus = getNextStatus(quote.status);
-
-                      // MAJ en base :
-                      await supabase
-                        .from("quotes")
-                        .update({ status: newStatus })
-                        .eq("id_int", quote.id_int);
-                      // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
-                      setQuotes((prevQuotes) =>
-                        prevQuotes.map((q) =>
-                          q.id_int === quote.id_int ? { ...q, status: newStatus } : q
-                        )
-                      );
-                    };
-                    
-
-                    return (
-                      <li key={quote.id_int} className="flex items-center justify-between border-b pb-1">
-                        <div>
-                          <span className="font-medium">#{quote.id_int.toString().padStart(4, "0")}</span> – {total} € – {quote.clients?.company}
-                          <button
-                            title={`Statut du devis : ${quote.status}`}
-                            className="cursor-pointer"
-                            onClick={handleStatusChange}>
-                            {icon}
-                          </button>
-                        </div>
-
-                        {/* Groupe des boutons alignés */}
-                        <div className="flex items-center gap-2">
-                          <Link href={`quotes/${quote.id_int}/edit`}>
-                            <Button size="sm" className="cursor-pointer">Éditer</Button>
-                          </Link>
-
-                          {profile && quote.clients && (
-                            <PDFDownloadLink
-                                document={<QuotePDF quote={quote} profile={profile} />}
-                                fileName={`Devis-${quote.id_int.toString().padStart(4, "0")}.pdf`}
-                            >
-                                {({ loading }) =>
-                                loading ? (
-                                    <span className="text-xs text-gray-400">Chargement…</span>
-                                ) : (
-                                    <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
-                                )
-                                }
-                            </PDFDownloadLink>
-                        )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Factures récentes */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="flex items-center justify-between w-full">
-                  <span className="flex items-center">
-                    <Users className="inline-block mr-2" />
-                    Factures récentes
-                  </span>
-                  <Link href="/invoices">
-                    <Button variant="outline" className="cursor-pointer">Voir toutes les factures</Button>
-                  </Link>
+              {/* Affichage du graphique */}
+              <div className="text-center text-gray-500 text-sm py-10">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip
+                    formatter={(value) => `${value} €`}
+                    labelFormatter={(label) => `Mois : ${label}`}
+                  />
+                  <Bar dataKey="total" fill="#4f46e5" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              </div>
+              <div className="flex justify-around mt-4 text-center">
+                <div>
+                  <p className="text-lg font-semibold">{totalRevenue} €</p>
+                  <p className="text-xs text-gray-500">Total encaissé sur 12 mois glissants</p>
                 </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-            {invoices.length === 0 ? (
-                <p className="text-sm text-gray-400">Aucune facture récente.</p>
-              ) : (
-                <ul className="text-sm text-gray-600 space-y-2">
-                  {invoices.map((invoice) => {
-                    const total = getTotalAmount(invoice.items).toFixed(2).replace(".", ",");
-                    
-                    // Icone des statuts du devis
-                    function getStatusIcon(status: string) {
-                      const baseClass = "ml-2 w-4 h-4 inline";
-                      switch (status.toLowerCase()) {
-                        case "payée":
-                          return <CheckCircle className={`${baseClass} text-green-500`} />;
-                        case "en retard":
-                          return <XCircle className={`${baseClass} text-red-500`} />;
-                        case "à régler":
-                          return <Clock className={`${baseClass} text-yellow-500`} />;
-                        default:
-                          return null;
-                      }
-                    }
-
-                    const icon = getStatusIcon(invoice.status);
-                    
-                    const statusCycle = ["À régler", "Payée", "En retard"];
-
-                    function getNextStatus(current: string) {
-                      const index = statusCycle.indexOf(current);
-                      return statusCycle[(index + 1) % statusCycle.length];
-                    }
-
-                    const handleStatusChange = async () => {
-                      const newStatus = getNextStatus(invoice.status);
-
-                      // MAJ en base :
-                      await supabase
-                        .from("invoices")
-                        .update({ status: newStatus })
-                        .eq("id_int", invoice.id_int);
-                      // puis refresh ou re-fetch quotes pour mettre à jour la partie graphique
-                      setInvoices((prevInvoices) =>
-                        prevInvoices.map((q) =>
-                          q.id_int === invoice.id_int ? { ...q, status: newStatus } : q
-                        )
-                      );
-                    };
-                    
-
-                    return (
-                      <li key={invoice.id_int} className="flex items-center justify-between border-b pb-1">
-                        <div>
-                          <span className="font-medium">#{invoice.id_int.toString().padStart(4, "0")}</span> – {total} € – {invoice.clients?.company}
-                          <button
-                            title={`Statut de la facture : ${invoice.status}`}
-                            className="cursor-pointer"
-                            onClick={handleStatusChange}>
-                            {icon}
-                          </button>
-                        </div>
-
-                        {/* Groupe des boutons alignés */}
-                        <div className="flex items-center gap-2">
-                          <Link href={`invoices/${invoice.id_int}/edit`}>
-                            <Button size="sm" className="cursor-pointer">Éditer</Button>
-                          </Link>
-
-                          {profile && invoice.clients && (
-                            <PDFDownloadLink
-                                document={<InvoicePDF invoice={invoice} profile={profile} />}
-                                fileName={`facture_${invoice.id_int.toString().padStart(4, "0")}_${invoice.clients?.company}_${invoice.created_at ? new Date(invoice.created_at).toLocaleDateString() : '-'}.pdf`}
-                            >
-                                {({ loading }) =>
-                                loading ? (
-                                    <span className="text-xs text-gray-400">Chargement…</span>
-                                ) : (
-                                    <Button variant="ghost" className="text-xs px-2 py-1 cursor-pointer">Télécharger</Button>
-                                )
-                                }
-                            </PDFDownloadLink>
-                        )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                <div>
+                  <p className="text-lg font-semibold">{pendinginvoices}</p>
+                  <p className="text-xs text-gray-500">Facture(s) à régler</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
+        </main>
 
-        </div>
-
-        {/* Graphique / Indicateurs */}
-        <Card className="h-full">
-          <CardHeader>
-            <CardTitle>
-              <BarChart2 className="inline-block mr-2" /> Revenus mensuels
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Affichage du graphique */}
-            <div className="text-center text-gray-500 text-sm py-10">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="label" />
-                <YAxis allowDecimals={false} />
-                <Tooltip
-                  formatter={(value) => `${value} €`}
-                  labelFormatter={(label) => `Mois : ${label}`}
-                />
-                <Bar dataKey="total" fill="#4f46e5" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            </div>
-            <div className="flex justify-around mt-4 text-center">
-              <div>
-                <p className="text-lg font-semibold">{totalRevenue} €</p>
-                <p className="text-xs text-gray-500">Total encaissé</p>
-              </div>
-              <div>
-                <p className="text-lg font-semibold">{pendinginvoices}</p>
-                <p className="text-xs text-gray-500">Facture(s) à régler</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-
-      {/* Footer */}
-      <footer className="text-center text-xs text-gray-400 mt-10">
-        © {new Date().getFullYear()} Alfred Facture. Tous droits réservés. <Link href="/legal/mentionsLegales" className="underline ml-1">Mentions légales</Link>
-      </footer>
+        {/* Footer */}
+        <footer className="text-center text-xs text-gray-400 mt-10">
+          © {new Date().getFullYear()} Alfred Facture. Tous droits réservés. <Link href="/legal/mentionsLegales" className="underline ml-1">Mentions légales</Link>
+        </footer>
+      </div>
     </div>
   );
 }
