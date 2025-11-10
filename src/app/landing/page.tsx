@@ -92,7 +92,7 @@ export default function LandingPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              15 jours d'essai gratuit
+              15 jours d&apos;essai gratuit
             </div>
 
             {/* Email CTA */}
@@ -180,7 +180,7 @@ export default function LandingPage() {
         <section className="py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">
-              Découvrez l'interface
+              Découvrez l&apos;interface
             </h2>
             <p className="text-xl text-slate-600 text-center mb-12">
               Une application pensée pour les entrepreneurs
@@ -290,7 +290,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-2 text-slate-700">
                     <span className="text-green-500 mt-1">✓</span>
-                    <span>17% d'économie</span>
+                    <span>17% d&apos;économie</span>
                   </li>
                   <li className="flex items-start gap-2 text-slate-700">
                     <span className="text-green-500 mt-1">✓</span>
@@ -309,7 +309,7 @@ export default function LandingPage() {
               >
                 {loading ? 'Chargement...' : 'Démarrer en premium'}
               </button>
-              <p className="text-sm text-slate-500 mt-4">15 jours d'essai gratuit inclus</p>
+              <p className="text-sm text-slate-500 mt-4">15 jours d&apos;essai gratuit inclus</p>
             </div>
           </div>
         </section>
@@ -321,7 +321,7 @@ export default function LandingPage() {
               Ils nous font confiance
             </h2>
             <p className="text-xl text-slate-600 text-center mb-12">
-              Rejoignez des centaines d'entrepreneurs satisfaits
+              Rejoignez des centaines d&apos;entrepreneurs satisfaits
             </p>
             
             <div className="grid md:grid-cols-3 gap-8">
@@ -332,7 +332,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-slate-700 mb-6 italic leading-relaxed">
-                  "Enfin un outil simple et efficace pour gérer mes factures et devis. Je recommande à tous les freelances !"
+                  &quot;Enfin un outil simple et efficace pour gérer mes factures et devis. Je recommande à tous les freelances !&quot;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white font-bold">
@@ -352,7 +352,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-slate-700 mb-6 italic leading-relaxed">
-                  "J'ai créé ma première facture en 3 minutes. L'interface est claire et intuitive, parfait pour les débutants."
+                  &quot;J&apos;ai créé ma première facture en 3 minutes. L&apos;interface est claire et intuitive, parfait pour les débutants.&quot;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
@@ -372,7 +372,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-slate-700 mb-6 italic leading-relaxed">
-                  "Service client réactif et génération PDF impeccable. Exactement ce que je cherchais. Merci Alfred !"
+                  &quot;Service client réactif et génération PDF impeccable. Exactement ce que je cherchais. Merci Alfred !&quot;
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center text-white font-bold">
@@ -395,7 +395,7 @@ export default function LandingPage() {
               Prêt à simplifier votre facturation ?
             </h2>
             <p className="text-xl text-blue-100 mb-10">
-              Rejoignez Alfred Facture et concentrez-vous sur l'essentiel : votre activité
+              Rejoignez Alfred Facture et concentrez-vous sur l&apos;essentiel : votre activité
             </p>
             <button
               onClick={() => {
