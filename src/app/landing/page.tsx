@@ -41,162 +41,407 @@ export default function LandingPage() {
   }
 
   return (
-    <div>
+    <div className="bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
-      <header 
-        className="fixed top-0 right-0 left-0 flex flex-col md:flex-row md:justify-between md:items-center p-4 bg-gradient-to-r from-blue-700 to-indigo-700 shadow-md shadow-sm z-50">
-        <div className='mx-auto flex gap-2 max-w-6xl items-center px-6 py-3'>
-          <div className="flex h-15 w-30 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <Image
-                src="/images/Logo_app.png"
-                alt="Invoice App Logo"
-                width={100}
-                height={100}
-                className="object-contain"
-              />
+      <header className="fixed top-0 right-0 left-0 bg-white/95 backdrop-blur-md shadow-sm z-50 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">
+                <Image
+                  src="/images/Logo_app.png"
+                  alt="Alfred Facture Logo"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">Alfred Facture</h1>
+                <p className="text-xs text-slate-600 hidden sm:block">Facturation simplifiée</p>
+              </div>
+            </div>
+            <Link
+              href="/login"
+              className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+            >
+              Se connecter
+            </Link>
           </div>
-          <h1 className="text-xl md:text-2xl font-bold text-white text-center md:text-left mb-2 md:mb-0">
-            Alfred-Facture
-            <span className="block md:inline md:ml-2 text-sm md:text-base font-normal text-gray-300">
-              Facturation simplifiée pour entrepreneurs
-            </span>
-          </h1>
         </div>
-        <nav className="flex justify-center md:justify-end">
-          <Link
-            href="/login"
-            className="px-4 py-2 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition text-sm md:text-base"
-          >
-            Se connecter
-          </Link>
-        </nav>
       </header>
 
+      {/* Spacer */}
+      <div className="h-20"></div>
 
-      <main className="min-h-screen flex flex-col items-center justify-center px-4 md:px-6 bg-white text-gray-900 pt-24">
-        {/* Avantages */}
-        <ul className="text-base md:text-lg mb-8 text-left max-w-xl mx-auto space-y-3 md:space-y-2">
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>Générez vos factures automatiquement (PDF, TVA, mentions légales)</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>Créez et éditez vos devis puis transformez-les en facture</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>Suivez vos paiements et relances</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>Restez conforme à la réglementation</span>
-          </li>
-          <li className="flex items-start">
-            <span className="mr-2">✅</span>
-            <span>Interface claire et prise en main immédiate</span>
-          </li>
-        </ul>
+      <main className="min-h-screen">
+        {/* Hero Section */}
+        <section className="pt-16 pb-20 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            
+            <h2 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
+              La facturation <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">simplifiée</span> pour entrepreneurs
+            </h2>
+            
+            <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
+              Créez vos factures et devis en quelques clics. Gagnez du temps et restez conforme à la législation.
+            </p>
 
-        {/* Call to action */}
-        <h2 className="text-base md:text-lg mb-2 text-center max-w-xl font-medium">
-          Entrez votre email et profitez de 15 jours d’essai gratuit (sans engagement)
-        </h2>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium mb-5 border border-blue-100">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+              15 jours d'essai gratuit
+            </div>
 
-        <input
-          type="email"
-          placeholder="Votre email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md mb-4 w-full max-w-xs"
-        />
-
-        <button
-          onClick={() => {
-            if (!email) return alert("Veuillez entrer votre email pour démarrer l’essai.")
-            localStorage.setItem('origin', 'demo')
-            window.location.href = `/signup?email=${encodeURIComponent(email)}`
-          }}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer w-full max-w-xs"
-        >
-          Commencer la démo
-        </button>
-
-        {/* Carousel d’images */}
-        <div className="w-full mt-10 max-w-4xl">
-          <ImageCarousel />
-        </div>
-
-        {/* Offres */}
-        <section className="mt-10 py-6 px-4 md:px-6 bg-gray-100 text-center rounded w-full">
-          <h2 className="text-xl md:text-2xl font-semibold mb-6">Offres disponibles</h2>
-          <p className="text-base md:text-lg mb-4">Choisissez la formule qui vous correspond le mieux.</p>
-
-          <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-8 mt-6">
-            {/* Mensuel */}
-            <button
-              onClick={() => setSelectedPlan('monthly')}
-              className={`cursor-pointer bg-white p-6 rounded-xl shadow-md w-full max-w-xs border-2 transition ${
-                selectedPlan === 'monthly' ? 'border-blue-600' : 'border-transparent'
-              }`}
-            >
-              <h3 className="text-lg md:text-xl font-semibold mb-2">Mensuel</h3>
-              <p className="text-xl md:text-2xl font-bold mb-4">9,50€/mois</p>
-              <p className="text-gray-600 text-sm md:text-base">Sans engagement. Résiliable à tout moment.</p>
-            </button>
-
-            {/* Annuel */}
-            <button
-              onClick={() => setSelectedPlan('yearly')}
-              className={`cursor-pointer bg-white p-6 rounded-xl shadow-md w-full max-w-xs border-2 transition ${
-                selectedPlan === 'yearly' ? 'border-blue-600' : 'border-transparent'
-              }`}
-            >
-              <h3 className="text-lg md:text-xl font-semibold mb-2">Annuel</h3>
-              <p className="text-xl md:text-2xl font-bold mb-4">95,00€/an</p>
-              <p className="text-blue-600 font-medium text-sm md:text-base">2 mois offerts</p>
-            </button>
-          </div>
-
-          {/* Bouton abonnement */}
-          <div className="mt-10">
-            <button
-              onClick={handleSubscribe}
-              disabled={loading}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer w-full max-w-xs"
-            >
-              {loading ? 'Chargement...' : 'Démarrer en premium'}
-            </button>
+            {/* Email CTA */}
+            <div className="max-w-md mx-auto mb-6">
+              <div className="flex justify-center sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="votre@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-5 py-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-lg"
+                />
+                <button
+                  onClick={() => {
+                    if (!email) return alert("Veuillez entrer votre email pour démarrer l'essai.")
+                    localStorage.setItem('origin', 'demo')
+                    window.location.href = `/signup?email=${encodeURIComponent(email)}`
+                  }}
+                  className="cursor-pointer px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 whitespace-nowrap"
+                >
+                  Commencer gratuitement
+                </button>
+              </div>
+              <p className="text-sm text-slate-500 mt-3">Sans engagement • Sans carte bancaire</p>
+            </div>
           </div>
         </section>
 
-        {/* Témoignages */}
-        <section className="py-20 px-4 md:px-6 bg-white">
-          <h2 className="text-xl md:text-2xl font-semibold text-center mb-10">Ils en parlent mieux que nous</h2>
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">&quot;Enfin un outil simple et efficace pour gérer mes factures et devis.&quot;</p>
-              <p className="mt-4 font-semibold">— Julien, graphiste freelance</p>
+        {/* Features Grid */}
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">📄</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Factures automatiques</h3>
+                <p className="text-slate-600">Générez vos factures en PDF avec TVA et mentions légales conformes</p>
+              </div>
+
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">✏️</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Devis professionnels</h3>
+                <p className="text-slate-600">Créez et transformez vos devis en factures en un clic</p>
+              </div>
+
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Suivi des paiements</h3>
+                <p className="text-slate-600">Suivez vos paiements et relances clients en temps réel</p>
+              </div>
+
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">⚖️</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">100% conforme</h3>
+                <p className="text-slate-600">Respectez la réglementation française automatiquement</p>
+              </div>
+
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-cyan-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Interface intuitive</h3>
+                <p className="text-slate-600">Prise en main immédiate, aucune formation nécessaire</p>
+              </div>
+
+              <div className="group p-8 rounded-2xl bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-12 h-12 rounded-xl bg-yellow-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">🚀</span>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Gain de temps</h3>
+                <p className="text-slate-600">Créez votre première facture en moins de 3 minutes</p>
+              </div>
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">&quot;J&apos;ai pu envoyer ma première facture en 5 minutes. Interface claire et rapide.&quot;</p>
-              <p className="mt-4 font-semibold">— Marie, consultante</p>
+          </div>
+        </section>
+
+        {/* Carousel Section */}
+        <section className="py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">
+              Découvrez l'interface
+            </h2>
+            <p className="text-xl text-slate-600 text-center mb-12">
+              Une application pensée pour les entrepreneurs
+            </p>
+            <div className="rounded-2xl overflow-hidden shadow-2xl">
+              <ImageCarousel />
             </div>
-            <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-              <p className="italic">&quot;Service client réactif, et la génération PDF est parfaite. Top !&quot;</p>
-              <p className="mt-4 font-semibold">— Samuel, développeur indépendant</p>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section className="py-20 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                Tarifs transparents
+              </h2>
+              <p className="text-xl text-slate-600">
+                Choisissez la formule adaptée à vos besoins
+              </p>
             </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Plan Mensuel */}
+              <div
+                onClick={() => setSelectedPlan('monthly')}
+                className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl ${
+                  selectedPlan === 'monthly'
+                    ? 'border-blue-600 bg-blue-50 shadow-lg scale-105'
+                    : 'border-slate-200 bg-white hover:border-blue-300'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Mensuel</h3>
+                    <p className="text-slate-600">Flexibilité maximale</p>
+                  </div>
+                  {selectedPlan === 'monthly' && (
+                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-bold text-slate-900">9,50€</span>
+                    <span className="text-slate-600">/mois</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>Sans engagement</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>Résiliable à tout moment</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>Toutes les fonctionnalités</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Plan Annuel */}
+              <div
+                onClick={() => setSelectedPlan('yearly')}
+                className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-300 hover:shadow-xl relative ${
+                  selectedPlan === 'yearly'
+                    ? 'border-blue-600 bg-blue-50 shadow-lg scale-105'
+                    : 'border-slate-200 bg-white hover:border-blue-300'
+                }`}
+              >
+                <div className="absolute -top-4 right-6 px-4 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold rounded-full shadow-lg">
+                  2 MOIS OFFERTS
+                </div>
+
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">Annuel</h3>
+                    <p className="text-slate-600">Meilleur rapport qualité/prix</p>
+                  </div>
+                  {selectedPlan === 'yearly' && (
+                    <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center">
+                      <span className="text-white text-sm">✓</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-bold text-slate-900">95€</span>
+                    <span className="text-slate-600">/an</span>
+                  </div>
+                  <p className="text-sm text-green-600 font-medium mt-2">
+                    Soit 7,92€/mois • Économisez 19€
+                  </p>
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>Sans engagement</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>17% d'économie</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-slate-700">
+                    <span className="text-green-500 mt-1">✓</span>
+                    <span>Toutes les fonctionnalités</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center mt-12">
+              <button
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Chargement...' : 'Démarrer en premium'}
+              </button>
+              <p className="text-sm text-slate-500 mt-4">15 jours d'essai gratuit inclus</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4">
+              Ils nous font confiance
+            </h2>
+            <p className="text-xl text-slate-600 text-center mb-12">
+              Rejoignez des centaines d'entrepreneurs satisfaits
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-slate-100">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-xl">★</span>
+                  ))}
+                </div>
+                <p className="text-slate-700 mb-6 italic leading-relaxed">
+                  "Enfin un outil simple et efficace pour gérer mes factures et devis. Je recommande à tous les freelances !"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white font-bold">
+                    J
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Julien M.</p>
+                    <p className="text-sm text-slate-600">Graphiste freelance</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-slate-100">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-xl">★</span>
+                  ))}
+                </div>
+                <p className="text-slate-700 mb-6 italic leading-relaxed">
+                  "J'ai créé ma première facture en 3 minutes. L'interface est claire et intuitive, parfait pour les débutants."
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
+                    M
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Marie L.</p>
+                    <p className="text-sm text-slate-600">Consultante</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border border-slate-100">
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-xl">★</span>
+                  ))}
+                </div>
+                <p className="text-slate-700 mb-6 italic leading-relaxed">
+                  "Service client réactif et génération PDF impeccable. Exactement ce que je cherchais. Merci Alfred !"
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center text-white font-bold">
+                    S
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-900">Samuel D.</p>
+                    <p className="text-sm text-slate-600">Développeur indépendant</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-indigo-600">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+              Prêt à simplifier votre facturation ?
+            </h2>
+            <p className="text-xl text-blue-100 mb-10">
+              Rejoignez Alfred Facture et concentrez-vous sur l'essentiel : votre activité
+            </p>
+            <button
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className="cursor-pointer px-12 py-4 bg-white text-blue-600 text-lg font-semibold rounded-xl hover:bg-slate-50 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+            >
+              Commencer gratuitement
+            </button>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="text-sm text-gray-600 text-center py-10 bg-white border-t">
-          <p className="mb-2">
-            <Link href="/legal/cgu" className="underline mr-4">CGU</Link>
-            <Link href="/legal/politiqueConfidentialite" className="underline mr-4">Politique de confidentialité</Link>
-            <Link href="/legal/mentionsLegales" className="underline">Mentions légales</Link>
-          </p>
-          <p>© {new Date().getFullYear()} Alfred Facture — Tous droits réservés.</p>
+        <footer className="bg-slate-900 text-slate-400 py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
+                  <Image
+                    src="/images/Logo_app.png"
+                    alt="Alfred Facture"
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-white font-semibold">Alfred Facture</span>
+              </div>
+              
+              <div className="flex flex-wrap justify-center gap-6 text-sm">
+                <Link href="/legal/cgu" className="hover:text-white transition">
+                  CGU
+                </Link>
+                <Link href="/legal/politiqueConfidentialite" className="hover:text-white transition">
+                  Confidentialité
+                </Link>
+                <Link href="/legal/mentionsLegales" className="hover:text-white transition">
+                  Mentions légales
+                </Link>
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-8 border-t border-slate-800 text-center text-sm">
+              <p>© {new Date().getFullYear()} Alfred Facture — Tous droits réservés.</p>
+            </div>
+          </div>
         </footer>
       </main>
     </div>
