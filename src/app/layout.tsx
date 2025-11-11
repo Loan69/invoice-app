@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     icon: '/images/Logo_app.png',
     apple: '/images/Logo_app.png',
   },
-  manifest: '/manifest.json',
+  manifest: '/images/manifest.json',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
