@@ -49,7 +49,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">
                 <Image
-                  src="/images/Logo_app.png"
+                  src="/Logo_app.png"
                   alt="Alfred Facture Logo"
                   width={40}
                   height={40}
@@ -415,7 +415,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center">
                   <Image
-                    src="/images/Logo_app.png"
+                    src="/Logo_app.png"
                     alt="Alfred Facture"
                     width={24}
                     height={24}

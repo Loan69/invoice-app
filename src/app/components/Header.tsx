@@ -47,7 +47,7 @@ export default function Header() {
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-15 w-30 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
             <Image
-              src="/images/Logo_app.png"
+              src="/Logo_app.png"
               alt="Invoice App Logo"
               width={100}
               height={100}
