@@ -97,7 +97,7 @@ export default function LandingPage() {
 
             {/* Email CTA */}
             <div className="max-w-md mx-auto px-4">
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:justify-center gap-3">
                 <input
                   type="email"
                   placeholder="votre@email.com"
