@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const images = [
-  '/screenshots/dashboard.png',
+  '/screenshots/dashboard1.png',
+  '/screenshots/dashboard2.png',
   '/screenshots/client.png',
   '/screenshots/invoice.png',
   '/screenshots/quote.png',

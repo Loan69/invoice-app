@@ -21,7 +21,7 @@ export default function SubscriptionBadge({ isSubscribed, isDemo }: Subscription
 
   return (
     <span
-      className={`ml-2 px-3 py-2 rounded-full text-sm font-medium ${color} border border-opacity-20`}
+      className={`sm:py-4 ml-2 px-3 py-2 rounded-full text-sm font-medium ${color} border border-opacity-20`}
     >
       {label}
     </span>

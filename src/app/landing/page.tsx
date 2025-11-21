@@ -321,7 +321,7 @@ export default function LandingPage() {
               Ils nous font confiance
             </h2>
             <p className="text-base sm:text-xl text-slate-600 text-center mb-8 sm:mb-12 px-4">
-              Rejoignez des d&apos;entrepreneurs satisfaits
+              Rejoignez des entrepreneurs satisfaits
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">

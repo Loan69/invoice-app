@@ -25,13 +25,13 @@ export default function NewInvoicePage() {
       {/* Colonne gauche : Titre + Formulaire */}
       <div className="flex flex-col items-start justify-start p-8">
         <div className="flex justify-between w-full items-center mb-6">
-          <h1 className="tml-10 text-3xl font-bold text-black mb-6">Créer une nouvelle facture</h1>
+          <h1 className="tml-10 xs:text-3xl text-2xl font-bold text-black">Créer une nouvelle facture</h1>
           <button
-            onClick={handleBack}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow cursor-pointer"
-          >
-            <ArrowLeft size={18} />
-            Retour
+              onClick={handleBack}
+              className="cursor-pointer inline-flex items-center gap-2 bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm"
+            >
+              <ArrowLeft size={20} />
+              Retour au dashboard
           </button>
         </div>
           <InvoiceForm mode="create" setIsDirty={setIsDirty} />

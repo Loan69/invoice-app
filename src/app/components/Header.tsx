@@ -43,8 +43,8 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-        {/* Logo + Nom */}
-        <Link href="/" className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
+          {/* Logo + Nom */}
           <div className="flex h-15 w-30 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
             <Image
               src="/Logo_app.png"
@@ -57,7 +57,7 @@ export default function Header() {
           <span className="text-xl font-semibold text-white">
             Alfred-Facture
           </span>
-        </Link>
+        </div>
 
         {/* Menu desktop — masqué sur pages login/signin */}
         {!isAuthPage && (
@@ -113,8 +113,9 @@ export default function Header() {
             <div className="flex flex-col gap-3">
               {[
                 { href: "/dashboard", label: "Tableau de bord" },
-                { href: "/clients", label: "Clients" },
-                { href: "/invoices", label: "Factures" },
+                { href: "/clients/new", label: "Ajouter un client" },
+                { href: "/quotes/new", label: "Créer un devis" },
+                { href: "/invoices/new", label: "Créer une facture" },
                 { href: "/settings", label: "Paramètres" },
               ].map((link) => (
                 <motion.div
@@ -133,9 +134,7 @@ export default function Header() {
                 </motion.div>
               ))}
               <motion.div variants={linkVariant} whileHover="hover" whileTap="tap">
-                <Button variant="secondary" className="text-sm w-fit">
-                  Déconnexion
-                </Button>
+                <LogoutButton />
               </motion.div>
             </div>
           </motion.nav>

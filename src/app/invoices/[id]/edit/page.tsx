@@ -6,10 +6,10 @@ import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import InvoiceForm from "@/app/components/InvoiceForm";
 import { InvoiceWithClient } from "@/types/invoiceWithClient";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useSupabase } from "@/app/providers";
 
 export default function EditInvoicePage() {
-  const supabase = createClientComponentClient();
+  const { supabase } = useSupabase();
   const router = useRouter();
   const params = useParams();
   const invoiceId = params?.id as string;
@@ -51,15 +51,15 @@ export default function EditInvoicePage() {
       {/* Colonne gauche : Titre + Formulaire */}
       <div className="flex flex-col items-start justify-start p-8">
         <div className="flex justify-between w-full items-center mb-6">
-          <h1 className="text-3xl font-bold text-black mb-6">
+          <h1 className="xs:text-3xl text-2xl font-bold text-black">
             Édition de la facture #{invoiceId.toString().padStart(4, "0")}
           </h1>
           <button
-            onClick={handleBack}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow cursor-pointer"
-          >
-            <ArrowLeft size={18} />
-            Retour
+              onClick={handleBack}
+              className="cursor-pointer inline-flex items-center gap-2 bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm"
+            >
+              <ArrowLeft size={20} />
+              Retour au dashboard
           </button>
         </div>
         {initialData ? (

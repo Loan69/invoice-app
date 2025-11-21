@@ -1,4 +1,3 @@
-// app/signup/page.tsx
 import { Suspense } from 'react';
 import SignupForm from '../components/SignupForm';
 

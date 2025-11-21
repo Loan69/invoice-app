@@ -3,20 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle } from 'lucide-react';
+import { FileText, Plus, Save, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { Client } from "@/types/client";
 import { Template } from "@/types/template";
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useUser } from "@supabase/auth-helpers-react";
 import { Items } from "@/types/items";
 import { Quote } from "@/types/quote";
+import { User } from "@supabase/supabase-js";
+import { useSupabase } from "../providers";
 
 type QuoteFormProps = {
   setIsDirty?: (v: boolean) => void;
@@ -26,8 +23,8 @@ type QuoteFormProps = {
 };
 
 export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProps) {
-  const user = useUser();
-  const supabase = createClientComponentClient();
+  const { supabase } = useSupabase()
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [clients, setClients] = useState<Client[] | [] >([]);
   const [form, setForm] = useState({
@@ -47,6 +44,28 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
   const [templateName, setTemplateName] = useState("");
   const [open, setOpen] = useState(false);              // pour contrôler l’ouverture du popover
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null); // id du template sélectionné
+
+  // Récupération de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data?.user) {
+          console.warn("Aucun utilisateur valide, redirection vers /signin");
+          router.replace("/login");
+          return;
+        }
+
+        setUser(data.user);
+      } catch (err) {
+        console.error("Erreur récupération user :", err);
+        router.replace("/login");
+      }
+    };
+
+    fetchUser();
+  }, [router, supabase]);
 
 
   // Requête pour rechercher un client à qui affecter le devis
@@ -183,86 +202,99 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
   };
 
   return (
+    // Container principal
     <div className="p-1 items-start w-full">
 
-      {/* Sélection d'un template */}
-      <div className="m-5">
-        <Label className="m-2">Charger un template</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between"
-            >
-              {selectedTemplate
-                ? templates.find((t) => t.id_int === selectedTemplate)?.name
-                : "Choisir un modèle"}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandInput placeholder="Rechercher..." />
-              <CommandList>
-                {templates.map((template) => (
-                  <CommandItem
-                    key={template.id_int}
-                    value={template.name}
-                    onSelect={() => {
-                      setSelectedTemplate(template.id_int);
-                      setForm({
-                        ...form,
-                        items: Array.isArray(template.items)
-                          ? template.items.map((item) => ({
-                              description: item.description ?? "",
-                              amount: item.amount ?? ""
-                            }))
-                          : [{ description: "", amount: "" }],
-                      });
-                      setOpen(false);
-                    }}
-                    className="flex justify-between items-center"
-                  >
-                    <div className="flex items-center">
-                      {template.name}
-                      {selectedTemplate === template.id_int && (
-                        <Check className="ml-2 h-4 w-4 text-green-500" />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteTemplate(template.id_int);
+      {/* Section Template */}
+      <div className="mb-6 bg-white rounded-2xl shadow-lg border-0 overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-50 to-blue-50 px-6 py-4 border-b-2 border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-indigo-600" />
+            Charger un modèle
+          </h3>
+        </div>
+        <div className="p-6">
+          {/* Popover pour sélection template avec design amélioré */}
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="cursor-pointer w-full justify-between h-12 rounded-xl border-2 hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+              >
+                {selectedTemplate
+                  ? templates.find((t) => t.id_int === selectedTemplate)?.name
+                  : "Choisir un modèle"}
+                <ChevronsUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Rechercher..." />
+                <CommandList>
+                  {templates.map((template) => (
+                    <CommandItem
+                      key={template.id_int}
+                      value={template.name}
+                      onSelect={() => {
+                        setSelectedTemplate(template.id_int);
+                        setForm({
+                          ...form,
+                          items: Array.isArray(template.items)
+                            ? template.items.map((item) => ({
+                                description: item.description ?? "",
+                                amount: item.amount ?? ""
+                              }))
+                            : [{ description: "", amount: "" }],
+                        });
+                        setOpen(false);
                       }}
-                      className="ml-4 text-red-500 hover:text-red-700"
+                      className="flex justify-between items-center"
                     >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+                      <div className="flex items-center">
+                        {template.name}
+                        {selectedTemplate === template.id_int && (
+                          <Check className="ml-2 h-4 w-4 text-green-500" />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTemplate(template.id_int);
+                        }}
+                        className="ml-4 text-red-500 hover:text-red-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-lg space-y-6 max-w-3xl w-full">
-
-      <div>
-          <Label>Titre du devis</Label>
-          <Input
+      {/* Formulaire principal */}
+      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-xl border-0 space-y-6">
+   
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Titre du devis
+          </label>
+          <input
             name="title"
             value={form.title}
             onChange={handleChange}
             placeholder="Ex : Pose d'un carrelage"
+            className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
 
         <div>
-          <Label>Client</Label>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Client
+          </label>
           <Select
             value={form.client_id || ""}
             onValueChange={(val) => {
@@ -270,10 +302,8 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
               if (setIsDirty) setIsDirty(true);
             }}
           >
-            <SelectTrigger>
-              <SelectValue
-                placeholder="Sélectionnez un client"
-              />
+            <SelectTrigger className="w-full h-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+              <SelectValue placeholder="Sélectionnez un client" />
             </SelectTrigger>
             <SelectContent>
               {clients.map((client) => (
@@ -288,67 +318,84 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
         </div>
 
         <div>
-          <Label>Date du devis</Label>
-          <Input
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Date du devis
+          </label>
+          <input
             type="date"
             name="datequo"
             value={form.datequo}
             onChange={handleChange}
             required
+            className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
 
-        {form.items?.map((item: Items, index: number) => (
-          <div key={index}>
-            {/* Titre + bouton supprimer */}
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-md font-semibold text-gray-800">
-                Prestation n°{index + 1}
-              </h4>
+        {/* Liste des prestations*/}
+        {form.items?.map((item, index) => (
+          <div key={index} className="p-5 bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl border-2 border-gray-200 hover:border-indigo-300 transition-all">
+            {/* Header de la prestation */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-bold text-indigo-600">
+                Prestation #{index + 1}
+              </span>
               <button
                 type="button"
                 onClick={() => {
                   const updatedItems = form.items?.filter((_: Items, i: number) => i !== index);
                   setForm({ ...form, items: updatedItems });
-                  if (setIsDirty) setIsDirty(true);
-                }}
-                className="text-red-500 hover:text-red-700 text-sm cursor-pointer"
-                title="Supprimer cette prestation"
+                  if (setIsDirty) setIsDirty(true);}}
+                className="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-all font-medium"
               >
-                🗑 Supprimer
+                <Trash2 className="w-4 h-4" />
+                Supprimer
               </button>
             </div>
-            
-            <Label>Description</Label>
-            <Textarea
-              name="description"
-              value={item.description}
-              onChange={(e) => handleItemChange(index, "description", e.target.value)}
-            />
 
-            <div className="relative mt-3 mb-3">
-            <Label>Montant hors taxe</Label>
-              <Input
-                name="amount"
-                value={item.amount}
-                onChange={(e) => handleItemChange(index, "amount", e.target.value)}
-                onBlur={(e) =>
-                  handleItemChange(index, "amount", formatAmount(e.target.value))
-                }
-                className="pr-10" // espace à droite pour le symbole
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
-                €
-              </span>
+            {/* Champs de la prestation */}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  name="description"
+                  value={item.description}
+                  onChange={(e) => handleItemChange(index, "description", e.target.value)}
+                  className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                  placeholder="Décrivez la prestation..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Montant HT
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="amount"
+                    value={item.amount}
+                    onChange={(e) => handleItemChange(index, "amount", e.target.value)}
+                    onBlur={(e) =>
+                      handleItemChange(index, "amount", formatAmount(e.target.value))
+                    }
+                    className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 pr-12 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="0,00"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                    €
+                  </span>
+                </div>
+              </div>
             </div>
-
           </div>
         ))}
 
-        {/* Bouton pour ajouter une prestation */}
-        <Button
+        {/* Bouton ajouter prestation */}
+        <button
           type="button"
-          variant="outline"
           onClick={() => {
             setForm((prev) => ({
               ...prev,
@@ -356,22 +403,26 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
             }));
             if (setIsDirty) setIsDirty(true);
           }}
-          className="cursor-pointer"
+          className="cursor-pointer w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-indigo-300 rounded-xl text-indigo-600 hover:bg-indigo-50 hover:border-indigo-400 transition-all font-semibold"
         >
-          + Ajouter une prestation
-        </Button>
-
+          <Plus className="w-5 h-5" />
+          Ajouter une prestation
+        </button>
+        
+        {/* Statut du devis */}
         <div>
-          <Label>Statut</Label>
-          <Select 
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Statut du devis
+          </label>
+          <Select
             value={form.status}
             onValueChange={(val) => {
               setForm({ ...form, status: val });
               if (setIsDirty) setIsDirty(true);
             }}
           >
-            <SelectTrigger>
-              <SelectValue />
+            <SelectTrigger className="w-full h-12 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+              <SelectValue placeholder="Sélectionnez un statut pour le devis" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="À envoyer">À envoyer</SelectItem>
@@ -381,37 +432,40 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
             </SelectContent>
           </Select>
         </div>
-        
-        {/* Bouton de soumission du formulaire */}
-        <Button
-          type="submit" 
-          className="w-full cursor-pointer"
-        >{mode === "edit" ? "Modifier le devis" : "Créer le devis"}
-        </Button>
 
-        {/* Enregistrement d'un modèle de facture */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full flex items-center gap-2 cursor-pointer"
-          onClick={ () => setShowTemplateName(prev => !prev)
-            }
+      {/* Boutons d'action */}
+      <div className="space-y-3 pt-6 border-t-2 border-gray-200">
+        <button
+          type="submit"
+          className="cursor-pointer w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white py-4 px-6 rounded-xl font-semibold text-base transition-all duration-200 shadow-lg hover:shadow-xl"
         >
-        <PlusCircle size={18} />
-          Enregistrer comme modèle
-        </Button>
+          {mode === "edit" ? "Modifier le devis" : "Créer le devis"}
+        </button>
 
+        <button
+          type="button"
+          className="cursor-pointer w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-300 text-gray-700 py-4 px-6 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all"
+          onClick={() => setShowTemplateName(prev => !prev)}
+        >
+          <Save className="w-5 h-5" />
+          Enregistrer comme modèle
+        </button>
+
+        {/* Section enregistrement template */}
         {showTemplateName && (
-          <div className="space-y-2 pt-2">
-            <Label>Nom du modèle</Label>
-            <Input
+          <div className="p-5 bg-blue-50 rounded-xl border-2 border-blue-200 space-y-3">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Nom du modèle
+            </label>
+            <input
+              type="text"
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="Ex : Devis standard client B2B"
+              className="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: Devis standard client B2B"
             />
-            <Button
+            <button
               type="button"
-              className="w-full mt-2 cursor-pointer"
               onClick={async () => {
                 if (!templateName) {
                   alert("Le nom du modèle est requis.");
@@ -442,12 +496,14 @@ export default function QuoteForm({ setIsDirty, mode, quoteData }: QuoteFormProp
                   setShowTemplateName(false);
                 }
               }}
+              className="cursor-pointer w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-4 rounded-xl font-semibold transition-all"
             >
-              Sauvegarder
-            </Button>
+              Sauvegarder le modèle
+            </button>
           </div>
         )}
-      </form>
-    </div>
+      </div>
+    </form>
+  </div>
   );
 }
