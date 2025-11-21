@@ -164,9 +164,9 @@ export default function SettingsPage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Résiliation de l'abonnement</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">Résiliation de l&apos;abonnement</h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      Vous pouvez annuler votre abonnement à tout moment. Vous conserverez l'accès jusqu'à la fin de votre période payée.
+                      Vous pouvez annuler votre abonnement à tout moment. Vous conserverez l&apos;accès jusqu&apos;à la fin de votre période payée.
                     </p>
                   </div>
 

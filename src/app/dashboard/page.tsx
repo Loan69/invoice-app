@@ -20,6 +20,7 @@ import QuotePDF from '../components/QuotePDF';
 import Header from '../components/Header';
 import { useSupabase } from '../providers';
 import { User } from "@supabase/supabase-js";
+import { GraphQuote } from '@/types/graphQuote';
 
 
 export default function DashboardPage() {
@@ -37,7 +38,7 @@ export default function DashboardPage() {
   const [potentialRevenue, setPotentialRevenue] = useState(0)
 
   const [graphData, setGraphData] = useState<GraphInvoice[]>([]);
-  const [quoteGraphData, setQuoteGraphData] = useState<any[]>([]);
+  const [quoteGraphData, setQuoteGraphData] = useState<GraphQuote[]>([]);
 
   // Récupération de l'utilisateur
   useEffect(() => {
@@ -297,7 +298,7 @@ export default function DashboardPage() {
                 <ChartColumnIncreasing className="w-4 h-4 opacity-80" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-medium opacity-90">Chiffre d'affaires</p>
+                <p className="text-xs font-medium opacity-90">Chiffre d&apos;affaires</p>
                 <p className="text-2xl font-bold">{totalRevenue.toLocaleString('fr-FR')} €</p>
                 <p className="text-xs opacity-75">12 derniers mois</p>
               </div>
@@ -357,11 +358,13 @@ export default function DashboardPage() {
             </Card>
 
             {/* Graphique */}
-            <Card className="h-[350px] border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1 flex flex-col min-h-0">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 md:flex-1 flex flex-col md:min-h-0"
+              style={{ height: 350 }} // style pour la version mobile
+            >
               <CardHeader className="border-b bg-gradient-to-r from-slate-50 to-blue-50 py-3 px-4 flex-shrink-0">
                 <CardTitle className="flex items-center gap-2 text-gray-900 text-base">
                   <BarChart2 className="w-4 h-4 text-indigo-600" />
-                  Évolution du chiffre d'affaires
+                  Évolution du chiffre d&apos;affaires
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 pb-3 px-4 flex-1 min-h-0 flex flex-col">

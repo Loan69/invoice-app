@@ -14,7 +14,6 @@ type Invoice = {
   items: InvoiceItem[];
   is_credit_note: boolean;
   original_invoice_id?: number;
-  [key: string]: any; // permet de conserver les colonnes existantes sans any dans la logique
 };
 
 // --- Utils ---

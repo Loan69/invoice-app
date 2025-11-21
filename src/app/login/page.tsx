@@ -235,7 +235,7 @@ export default function LoginPage() {
                 {/* Lien vers inscription */}
                 <div className="text-center pt-6 border-t border-gray-200 mt-8">
                   <p className="text-sm text-gray-600">
-                    Vous n'avez pas de compte ?{' '}
+                    Vous n&apos;avez pas de compte ?{' '}
                     <Link href="/signup" className="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors hover:underline">
                       Créer un compte
                     </Link>

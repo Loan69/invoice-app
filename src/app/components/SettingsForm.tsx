@@ -179,7 +179,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Type d'abonnement */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
-          <span className="text-sm font-semibold text-gray-700">Type d'abonnement</span>
+          <span className="text-sm font-semibold text-gray-700">Type d&apos;abonnement</span>
           {profileForm.abo_plan ? (
             <span className={`px-4 py-2 rounded-lg text-white text-sm font-semibold ${
               profileForm.abo_plan === "yearly" ? "bg-gradient-to-r from-green-500 to-green-600" : "bg-gradient-to-r from-blue-500 to-blue-600"
@@ -270,7 +270,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               disabled
               className="w-full p-3 bg-gray-100 border border-gray-300 rounded-xl cursor-not-allowed text-gray-500"
             />
-            <p className="text-xs text-gray-500 mt-1">L'email ne peut pas être modifié</p>
+            <p className="text-xs text-gray-500 mt-1">L&apos;email ne peut pas être modifié</p>
           </div>
 
           <div>
@@ -430,7 +430,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
 
             {!profileForm.vat_applicable && (
               <p className="text-sm text-gray-500 mt-2 italic">
-                La TVA n'est pas appliquée : le statut fiscal est défini comme <strong>Exonéré</strong>.
+                La TVA n&apos;est pas appliquée : le statut fiscal est défini comme <strong>Exonéré</strong>.
               </p>
             )}
           </div>

@@ -170,7 +170,7 @@ export default function AddClientForm({ setIsDirty, clientData, mode, clientId }
           <div className="space-y-4 pt-4 border-t-2 border-gray-200">
             <div className="flex items-center gap-2 mb-3">
               <Building className="w-5 h-5 text-indigo-600" />
-              <h3 className="font-semibold text-gray-900">Informations de l'entreprise</h3>
+              <h3 className="font-semibold text-gray-900">Informations de l&apos;entreprise</h3>
             </div>
 
             <div>

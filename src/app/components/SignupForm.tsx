@@ -90,7 +90,7 @@ export default function SignupForm() {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      onSubmit(e as any);
+      onSubmit(e);
     }
   };
 
@@ -107,7 +107,7 @@ export default function SignupForm() {
                 <UserPlus className="w-10 h-10 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-3">Créer un compte</h1>
-              <p className="text-indigo-100">Rejoignez Alfred Facture dès aujourd'hui</p>
+              <p className="text-indigo-100">Rejoignez Alfred Facture dès aujourd&apos;hui</p>
             </div>
 
             {/* Corps du formulaire */}
