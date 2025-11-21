@@ -24,7 +24,8 @@ export default function Header() {
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
-    pathname === "/completeProfile";
+    pathname === "/completeProfile" ||
+    pathname === "/resetPassword";
     // On pourra ajouter en ajouter d'autres ici
 
   const linkVariant = {
