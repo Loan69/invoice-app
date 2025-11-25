@@ -286,8 +286,8 @@ export default function CompleteProfilePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <p className="text-sm font-medium text-blue-900">Période d'essai activée</p>
-                <p className="text-sm text-blue-700 mt-1">Vous bénéficiez de 15 jours d'essai gratuit pour découvrir Alfred.</p>
+                <p className="text-sm font-medium text-blue-900">Période d&apos;essai activée</p>
+                <p className="text-sm text-blue-700 mt-1">Vous bénéficiez de 15 jours d&apos;essai gratuit pour découvrir Alfred.</p>
               </div>
             </div>
           )}
