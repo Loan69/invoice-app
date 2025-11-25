@@ -217,7 +217,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={handleLogin}
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-4 rounded-xl font-semibold text-base hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-8"
+                  className="cursor-pointer w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-4 rounded-xl font-semibold text-base hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed mt-8"
                 >
                   {isLoading ? (
                     <span className="flex items-center justify-center">

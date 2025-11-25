@@ -2,24 +2,40 @@
 
 import { useEffect, useState } from 'react'
 import Header from '../components/Header'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { User } from "@supabase/supabase-js";
+import { useSupabase } from '../providers';
+import { useRouter } from 'next/navigation';
 
 
 export default function AbonnementExpirePage() {
-  const supabase = createClientComponentClient()
+  const { supabase } = useSupabase()
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly')
-  const [userEmail, setUserEmail] = useState<string | null>(null)
 
-  // Récupération de l'adresse de l'utilisateur
-  useEffect( () => {
-    const getUserEmail = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        setUserEmail(user?.email ?? null)
+  // Récupération de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data?.user) {
+          console.warn("Aucun utilisateur valide, redirection vers /signin");
+          router.replace("/login");
+          return;
+        }
+
+        setUser(data.user);
+        console.log("Utilisateur connecté :", data.user);
+      } catch (err) {
+        console.error("Erreur récupération user :", err);
+        router.replace("/login");
       }
-  
-      getUserEmail()
-    }, [])
+    };
+
+    fetchUser();
+  }, [router, supabase]);
 
   const handleSubscribe = async () => {
 
@@ -27,6 +43,8 @@ export default function AbonnementExpirePage() {
     try {
       localStorage.setItem('origin', 'aboExpire')
       localStorage.setItem('abo_plan', selectedPlan);
+      const userEmail = user?.email
+      console.log(userEmail, selectedPlan)
       const res = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,6 +52,7 @@ export default function AbonnementExpirePage() {
       })
 
       const data = await res.json()
+      console.log(data.url)
       if (data.url) {
         window.location.href = data.url
       } else {

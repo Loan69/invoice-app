@@ -47,7 +47,7 @@ export default function DashboardPage() {
         const { data, error } = await supabase.auth.getUser();
 
         if (error || !data?.user) {
-          console.warn("Aucun utilisateur valide, redirection vers /signin");
+          console.warn("Aucun utilisateur valide, redirection vers /login");
           router.replace("/login");
           return;
         }
@@ -63,33 +63,58 @@ export default function DashboardPage() {
     fetchUser();
   }, [router, supabase]);
 
+  // Récupération des infos de l'utilisateur + mise à jour de is_demo
   useEffect(() => {
     const fetchUser = async () => {
       if (!user) return
-      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
         .eq('id', user?.id)
         .maybeSingle();
+      
       if (!error && data) {
         setProfile(data);
+        
+        // On regarde si la démo a expiré
+        if (data.is_demo && data.demo_expires_at) {
+          const now = new Date();
+          const expiresAt = new Date(data.demo_expires_at);
+          
+          // Si la date actuelle a dépassé la date d'expiration
+          if (now > expiresAt) {
+            // On met à jour is_demo à false
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update({ is_demo: false })
+              .eq('id', user.id);
+            
+            if (!updateError) {
+              // On met à jour le state local aussi
+              setProfile({ ...data, is_demo: false });
+            } else {
+              console.error("Erreur lors de la mise à jour du statut demo:", updateError);
+            }
+          }
+        }
       } else {
         console.error("Erreur lors de la récupération du profil de l'utilisateur:", error);
       }
-
+      
       setProfileLoading(false);
     };
     
     fetchUser();
   }, [user]);
 
+  // Vérification si l'utilisateur est abonné
   useEffect(() => {
     if (profile && !profile.is_subscribed && !profile.is_demo) {
       router.push("/aboExpire")
     }
   }, [profile, router])
   
+  // Récupération des devis de l'utilisateur
   useEffect(() => {
     const fetchQuotes = async () => {
       const { data, error } = await supabase

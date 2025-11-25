@@ -3,17 +3,39 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import LoadingSpinner from '../components/LoadingSpinner';
-import { useUser } from '@supabase/auth-helpers-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { User } from "@supabase/supabase-js";
+import { useSupabase } from '../providers';
 
 export default function AboSuccessClient() {
-  const supabase = createClientComponentClient()
+  const { supabase } = useSupabase()
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter()
   const searchParams = useSearchParams()
   const emailFromUrl = searchParams.get('email')
-  const user = useUser()
   const [origin, setOrigin] = useState<string | null>(null)
   const [aboPlan, setAboPlan] = useState<string | null>(null)
+
+  // Récupération de l'utilisateur
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data?.user) {
+          console.warn("Aucun utilisateur valide, redirection vers /login");
+          router.replace("/login");
+          return;
+        }
+
+        setUser(data.user);
+      } catch (err) {
+        console.error("Erreur récupération user :", err);
+        router.replace("/login");
+      }
+    };
+
+    fetchUser();
+  }, [router, supabase]);
 
   useEffect(() => {
     // Lecture de localStorage uniquement côté client

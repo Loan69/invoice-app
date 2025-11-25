@@ -187,7 +187,7 @@ export default function EditProfileForm({ setIsDirty, profileData }: ProfileForm
               {profileForm.abo_plan === "yearly" ? "Abonnement annuel" : "Abonnement mensuel"}
             </span>
           ) : (
-            <span className="text-gray-500 text-sm">Non renseigné</span>
+            <span className="text-gray-500 text-sm">Aucun abonnement</span>
           )}
         </div>
 

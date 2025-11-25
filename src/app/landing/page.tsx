@@ -121,77 +121,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Grid */}
-        <section className="py-12 sm:py-16 px-4 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">📄</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Factures automatiques</h3>
-                <p className="text-sm sm:text-base text-slate-600">Générez vos factures en PDF avec TVA et mentions légales conformes</p>
-              </div>
-
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">✏️</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Devis professionnels</h3>
-                <p className="text-sm sm:text-base text-slate-600">Créez et transformez vos devis en factures en un clic</p>
-              </div>
-
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">💰</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Suivi des paiements</h3>
-                <p className="text-sm sm:text-base text-slate-600">Suivez vos paiements et relances clients en temps réel</p>
-              </div>
-
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">⚖️</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">100% conforme</h3>
-                <p className="text-sm sm:text-base text-slate-600">Respectez la réglementation française automatiquement</p>
-              </div>
-
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-cyan-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">⚡</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Interface intuitive</h3>
-                <p className="text-sm sm:text-base text-slate-600">Prise en main immédiate, aucune formation nécessaire</p>
-              </div>
-
-              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-yellow-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
-                  <span className="text-xl sm:text-2xl">🚀</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Gain de temps</h3>
-                <p className="text-sm sm:text-base text-slate-600">Créez votre première facture en moins de 3 minutes</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Carousel Section */}
-        <section className="py-12 sm:py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-slate-900 mb-3 sm:mb-4 px-4">
-              Découvrez l&apos;interface
-            </h2>
-            <p className="text-base sm:text-xl text-slate-600 text-center mb-8 sm:mb-12 px-4">
-              Une application pensée pour les entrepreneurs
-            </p>
-            <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
-              <ImageCarousel />
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Section */}
+        {/* Section prix */}
         <section className="py-12 sm:py-20 px-4 bg-white">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-8 sm:mb-12 px-4">
@@ -305,7 +235,7 @@ export default function LandingPage() {
               <button
                 onClick={handleSubscribe}
                 disabled={loading}
-                className="w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-base sm:text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer w-full sm:w-auto px-8 sm:px-12 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-base sm:text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Chargement...' : 'Démarrer en premium'}
               </button>
@@ -314,7 +244,82 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials */}
+        {/* Fonctionnalités */}
+        <section className="py-12 sm:py-16 px-4 bg-white">
+          <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12 px-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-3 sm:mb-4">
+                Pourquoi choisir Alfred Facture ?
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">📄</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Factures automatiques</h3>
+                <p className="text-sm sm:text-base text-slate-600">Générez vos factures en PDF avec TVA et mentions légales conformes</p>
+              </div>
+
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">✏️</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Devis professionnels</h3>
+                <p className="text-sm sm:text-base text-slate-600">Créez et transformez vos devis en factures en un clic</p>
+              </div>
+
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">💰</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Suivi des paiements</h3>
+                <p className="text-sm sm:text-base text-slate-600">Suivez vos paiements et relances clients en temps réel</p>
+              </div>
+
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-orange-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">⚖️</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">100% conforme</h3>
+                <p className="text-sm sm:text-base text-slate-600">Respectez la réglementation française automatiquement</p>
+              </div>
+
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-cyan-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">⚡</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Interface intuitive</h3>
+                <p className="text-sm sm:text-base text-slate-600">Prise en main immédiate, aucune formation nécessaire</p>
+              </div>
+
+              <div className="group p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-yellow-50 to-amber-50 border border-yellow-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-yellow-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl">🚀</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">Gain de temps</h3>
+                <p className="text-sm sm:text-base text-slate-600">Créez votre première facture en moins de 3 minutes</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Carousel Section */}
+        <section className="py-12 sm:py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-slate-900 mb-3 sm:mb-4 px-4">
+              Découvrez l&apos;interface
+            </h2>
+            <p className="text-base sm:text-xl text-slate-600 text-center mb-8 sm:mb-12 px-4">
+              Une application pensée pour les entrepreneurs
+            </p>
+            <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
+              <ImageCarousel />
+            </div>
+          </div>
+        </section>
+
+        {/* Témoignages */}
         <section className="py-12 sm:py-20 px-4 bg-gradient-to-b from-slate-50 to-white">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-slate-900 mb-3 sm:mb-4 px-4">
