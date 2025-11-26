@@ -77,8 +77,8 @@ export default function DashboardPage() {
         setProfile(data);
         
         // On regarde si la démo a expiré
+        const now = new Date();
         if (data.is_demo && data.demo_expires_at) {
-          const now = new Date();
           const expiresAt = new Date(data.demo_expires_at);
           
           // Si la date actuelle a dépassé la date d'expiration
@@ -87,6 +87,24 @@ export default function DashboardPage() {
             const { error: updateError } = await supabase
               .from("profiles")
               .update({ is_demo: false })
+              .eq('id', user.id);
+            
+            if (!updateError) {
+              // On met à jour le state local aussi
+              setProfile({ ...data, is_demo: false });
+            } else {
+              console.error("Erreur lors de la mise à jour du statut demo:", updateError);
+            }
+          }
+        }
+        // On regarde si la date de fin d'abonnement est dépassée
+        if (data.is_subscribed && data.abo_end_date) {
+          const endAbo = new Date(data.abo_end_date);
+          if (now > endAbo) {
+            // On met à jour is_subscribed à false
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update({ is_subscribed: false })
               .eq('id', user.id);
             
             if (!updateError) {

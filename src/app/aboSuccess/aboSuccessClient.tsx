@@ -64,6 +64,7 @@ export default function AboSuccessClient() {
             is_demo: false,
             subscription_started_at: new Date().toISOString(),
             abo_plan: aboPlan,
+            abo_end_date: null,
           })
           .eq('id', user.id)
 
