@@ -20,12 +20,15 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // on détermine si on est sur login / signup
+  // on détermine les pages à masquer
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/completeProfile" ||
-    pathname === "/resetPassword";
+    pathname === "/resetPassword" ||
+    pathname === "/cgu" ||
+    pathname === "/mentionsLegales" ||
+    pathname === "/politiqueConfidentialite";
     // On pourra ajouter en ajouter d'autres ici
 
   const linkVariant = {
@@ -59,7 +62,7 @@ export default function Header() {
           </span>
         </div>
 
-        {/* Menu desktop — masqué sur pages login/signin */}
+        {/* Menu desktop */}
         {!isAuthPage && (
           <nav className="hidden md:flex items-center gap-6">
             {[
