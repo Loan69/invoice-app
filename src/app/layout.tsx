@@ -21,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/images/Logo_app.png" type="image/png" />
         <link rel="apple-touch-icon" href="/images/Logo_app.png" />
         <meta name="theme-color" content="#1d4ed8" />
+        <meta name="google-site-verification" content="c8f0_D3ksUBL7YXv8ZKOl4tjPwT3DDndusITr6czme0" />
       </head>
       <body>
         {appEnv === 'preprod' && (

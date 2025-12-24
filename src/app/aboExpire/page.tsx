@@ -52,7 +52,6 @@ export default function AbonnementExpirePage() {
       })
 
       const data = await res.json()
-      console.log(data.url)
       if (data.url) {
         window.location.href = data.url
       } else {
