@@ -1,3 +1,4 @@
+import Script from 'next/script'
 import './globals.css'
 import { Providers } from './providers'
 import type { Metadata } from 'next'
@@ -24,6 +25,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="google-site-verification" content="c8f0_D3ksUBL7YXv8ZKOl4tjPwT3DDndusITr6czme0" />
       </head>
       <body>
+        {/* Google tag (gtag.js) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZL9MCY2K63"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-ZL9MCY2K63');
+            `,
+          }}
+        />
         {appEnv === 'preprod' && (
           <div className="w-full bg-yellow-300 text-black text-center p-2 text-sm font-semibold animate-pulse">
             Environnement de PRÉPRODUCTION

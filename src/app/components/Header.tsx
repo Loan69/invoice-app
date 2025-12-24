@@ -55,7 +55,7 @@ export default function Header() {
             />
           </div>
           <span className="text-xl font-semibold text-white">
-            Alfred-Facture
+            Alfred Facture
           </span>
         </div>
 
