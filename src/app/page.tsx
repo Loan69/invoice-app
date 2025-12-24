@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import ImageCarousel from './components/ImageCarousel'
 import Image from 'next/image'
+import { FAQ } from './components/FAQ'
 
 export default function Home() {
   const [loading, setLoading] = useState(false)
@@ -58,7 +59,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-slate-900">Alfred Facture</h1>
-                <p className="text-xs text-slate-600 hidden sm:block">Facturation simplifiée</p>
+                <p className="text-xs text-slate-600 hidden sm:block">Logiciel Facturation Simple | Alfred Facture - Auto-Entrepreneurs & Artisans</p>
               </div>
             </div>
             <Link
@@ -412,6 +413,9 @@ export default function Home() {
             </button>
           </div>
         </section>
+
+        {/* Section FAQ */}
+        <FAQ/>
 
         {/* Footer */}
         <footer className="bg-slate-900 text-slate-400 py-8 sm:py-12 px-4">
