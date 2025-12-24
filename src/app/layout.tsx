@@ -23,6 +23,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/images/Logo_app.png" />
         <meta name="theme-color" content="#1d4ed8" />
         <meta name="google-site-verification" content="c8f0_D3ksUBL7YXv8ZKOl4tjPwT3DDndusITr6czme0" />
+        <Script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Alfred Facture",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "9.50",
+                "priceCurrency": "EUR"
+              },
+              "description": "Logiciel de facturation simple pour auto-entrepreneurs et artisans. Créez factures et devis en 3 minutes."
+            })
+          }}
+        />
       </head>
       <body>
         {/* Google tag (gtag.js) */}
